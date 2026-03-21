@@ -1,0 +1,221 @@
+
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; padding: 32px 24px; background: #F0EFEA; }
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;1,400&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500&display=swap');
+
+.comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 900px; margin: 0 auto; }
+.mood-col { display: flex; flex-direction: column; gap: 12px; }
+.v-label { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; text-align: center; color: #888; padding: 4px 0; }
+
+.hero { border-radius: 16px; padding: 28px 22px; display: flex; flex-direction: column; gap: 10px; justify-content: flex-end; min-height: 160px; position: relative; overflow: hidden; }
+.wordmark { font-family: 'Cormorant Garamond', serif; font-weight: 500; font-size: 40px; line-height: 1; letter-spacing: -0.02em; }
+.tagline-mono { font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: 0.18em; text-transform: uppercase; position: relative; z-index: 1; }
+.phrase { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 14px; position: relative; z-index: 1; }
+.logo-row { display: flex; align-items: center; gap: 10px; position: relative; z-index: 1; }
+.z-icon { width: 36px; height: 36px; flex-shrink: 0; }
+
+.palette-card { border-radius: 12px; padding: 14px; }
+.ps-title { font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: 0.16em; text-transform: uppercase; margin-bottom: 10px; }
+.swatches { display: flex; gap: 6px; }
+.sw { display: flex; flex-direction: column; flex: 1; gap: 4px; }
+.sw-dot { height: 32px; border-radius: 7px; }
+.sw-hex { font-family: 'DM Mono', monospace; font-size: 7px; text-align: center; }
+
+.wa-preview { border-radius: 14px; overflow: hidden; }
+.wa-bar { padding: 9px 13px; display: flex; align-items: center; gap: 9px; }
+.wa-av { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 13px; font-weight: 600; flex-shrink: 0; }
+.wa-name { font-size: 11px; font-weight: 500; }
+.wa-status { font-size: 8px; margin-top: 1px; }
+.wa-chat { padding: 10px 8px; display: flex; flex-direction: column; gap: 6px; background: #DCE9D8; }
+.wa-m { max-width: 88%; padding: 7px 10px; border-radius: 10px; font-size: 10px; line-height: 1.5; }
+.wa-m.u { background: #fff; color: #333; align-self: flex-start; border-top-left-radius: 2px; }
+.wa-m.b { align-self: flex-end; border-top-right-radius: 2px; background: #C8E6C0; color: #1a1a1a; }
+.wa-m-head { font-family: 'DM Mono', monospace; font-size: 7px; font-weight: 500; margin-bottom: 3px; text-transform: uppercase; letter-spacing: 0.08em; color: #2E7D32; }
+.wa-time { font-size: 8px; color: #aaa; text-align: right; margin-top: 2px; }
+
+.amp-mini { border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+.amp-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+.amp-nm { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 600; line-height: 1.1; }
+.amp-badge { font-family: 'DM Mono', monospace; font-size: 7px; padding: 3px 6px; border-radius: 4px; flex-shrink: 0; }
+.bar-r { display: flex; flex-direction: column; gap: 4px; }
+.bar-lbl { display: flex; justify-content: space-between; font-size: 8px; }
+.bar-t { height: 3px; border-radius: 99px; overflow: hidden; }
+.bar-f { height: 100%; border-radius: 99px; }
+
+.tagline-card { border-radius: 12px; padding: 22px 18px; }
+
+/* ══ DARK — Brote ══ */
+.d-hero   { background: #111410; }
+.d-glow   { position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; border-radius: 50%; background: radial-gradient(circle, rgba(200,240,32,0.15) 0%, transparent 65%); }
+.d-word   { color: #EEFCE8; }
+.d-em     { color: #C8F020; font-style: italic; }
+.d-tag    { color: rgba(238,252,232,0.30); }
+.d-phrase { color: rgba(238,252,232,0.40); }
+.d-pal    { background: #1A1E18; border: 1px solid rgba(200,240,32,0.12); }
+.d-ps-t   { color: rgba(238,252,232,0.3); }
+.d-hex    { color: rgba(238,252,232,0.3); }
+.d-wa-bar { background: #111410; }
+.d-wa-av  { background: #C8F020; color: #111410; }
+.d-wa-nm  { color: #EEFCE8; }
+.d-wa-st  { color: rgba(238,252,232,0.4); }
+.d-amp    { background: #1A1E18; border: 1px solid rgba(200,240,32,0.15); }
+.d-amp-nm { color: #EEFCE8; }
+.d-amp-sb { color: rgba(238,252,232,0.4); font-size: 8px; margin-top: -6px; }
+.d-amp-bd { background: rgba(200,240,32,0.1); color: #C8F020; border: 1px solid rgba(200,240,32,0.25); }
+.d-bar-lbl{ color: rgba(238,252,232,0.4); }
+.d-bar-v  { color: #C8F020; font-family: 'DM Mono', monospace; }
+.d-bar-vo { color: #F08020; font-family: 'DM Mono', monospace; }
+.d-bar-t  { background: rgba(200,240,32,0.1); }
+.d-bar-to { background: rgba(240,128,32,0.1); }
+.d-bar-a  { background: #C8F020; }
+.d-bar-h  { background: #F08020; }
+.d-tc     { background: #C8F020; }
+.d-tc-w   { color: #111410; }
+.d-tc-em  { color: rgba(17,20,16,0.4); font-style: italic; }
+.d-tc-s   { color: rgba(17,20,16,0.4); }
+
+/* ══ LIGHT — Brote ══ */
+.l-hero   { background: #F5FDE8; border: 1px solid rgba(100,160,20,0.15); }
+.l-glow   { position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; border-radius: 50%; background: radial-gradient(circle, rgba(160,200,20,0.18) 0%, transparent 65%); }
+.l-glow2  { position: absolute; bottom: -40px; left: -20px; width: 160px; height: 160px; border-radius: 50%; background: radial-gradient(circle, rgba(240,128,32,0.10) 0%, transparent 70%); }
+.l-word   { color: #1A2208; }
+.l-em     { color: #6AAA00; font-style: italic; }
+.l-tag    { color: #8AAA50; }
+.l-phrase { color: #A0B870; }
+.l-pal    { background: #fff; border: 1px solid rgba(100,160,20,0.15); }
+.l-ps-t   { color: #8AAA50; }
+.l-hex    { color: #8AAA50; }
+.l-wa-bar { background: #1A2208; }
+.l-wa-av  { background: #A8D800; color: #1A2208; }
+.l-wa-nm  { color: #F5FDE8; }
+.l-wa-st  { color: rgba(245,253,232,0.45); }
+.l-amp    { background: #fff; border: 1px solid rgba(100,160,20,0.18); }
+.l-amp-nm { color: #1A2208; }
+.l-amp-sb { color: #7A9A40; font-size: 8px; margin-top: -6px; }
+.l-amp-bd { background: rgba(168,216,0,0.12); color: #5A8A00; border: 1px solid rgba(168,216,0,0.3); }
+.l-bar-lbl{ color: #7A9A40; }
+.l-bar-v  { color: #6AAA00; font-family: 'DM Mono', monospace; }
+.l-bar-vo { color: #D06010; font-family: 'DM Mono', monospace; }
+.l-bar-t  { background: rgba(168,216,0,0.12); }
+.l-bar-to { background: rgba(240,128,32,0.10); }
+.l-bar-a  { background: #A8D800; }
+.l-bar-h  { background: #F08020; }
+.l-tc     { background: #1A2208; }
+.l-tc-w   { color: #F5FDE8; }
+.l-tc-em  { color: #A8D800; font-style: italic; }
+.l-tc-s   { color: rgba(245,253,232,0.4); }
+</style>
+
+<div class="comparison">
+
+  <!-- ══ DARK ══ -->
+  <div class="mood-col">
+    <div class="v-label">◼ Dark — Brote</div>
+
+    <div class="hero d-hero">
+      <div class="d-glow"></div>
+      <div class="logo-row">
+        <svg class="z-icon" viewBox="0 0 64 64" fill="none">
+          <rect width="64" height="64" rx="13" fill="rgba(200,240,32,0.10)"/>
+          <path d="M14 16H50L22 48H50" stroke="#EEFCE8" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="50" cy="16" r="5" fill="#C8F020"/>
+          <circle cx="50" cy="16" r="2.5" fill="#7AAA10"/>
+        </svg>
+        <div class="wordmark d-word">Z<em class="d-em">ea</em></div>
+      </div>
+      <div class="tagline-mono d-tag">Biotech Field Agent · Argentina</div>
+      <div class="phrase d-phrase">"El campo, a tiempo."</div>
+    </div>
+
+    <div class="palette-card d-pal">
+      <div class="ps-title d-ps-t">Paleta dark</div>
+      <div class="swatches">
+        <div class="sw"><div class="sw-dot" style="background:#111410"></div><div class="sw-hex d-hex">#111410</div></div>
+        <div class="sw"><div class="sw-dot" style="background:#1A1E18"></div><div class="sw-hex d-hex">#1A1E18</div></div>
+        <div class="sw"><div class="sw-dot" style="background:#C8F020"></div><div class="sw-hex d-hex">#C8F020</div></div>
+        <div class="sw"><div class="sw-dot" style="background:#F5C400"></div><div class="sw-hex d-hex">#F5C400</div></div>
+        <div class="sw"><div class="sw-dot" style="background:#F08020"></div><div class="sw-hex d-hex">#F08020</div></div>
+        <div class="sw"><div class="sw-dot" style="background:#EEFCE8;border:1px solid rgba(0,0,0,0.08)"></div><div class="sw-hex d-hex">#EEFCE8</div></div>
+      </div>
+    </div>
+
+    <div class="wa-preview">
+      <div class="wa-bar d-wa-bar"><div class="wa-av d-wa-av">Z</div><div><div class="wa-name d-wa-nm">Zea</div><div class="wa-status d-wa-st">en línea</div></div></div>
+      <div class="wa-chat">
+        <div class="wa-m u">📷 [hoja de soja]<div class="wa-time">06:42</div></div>
+        <div class="wa-m b"><div class="wa-m-head">Zea</div><strong>Phytophthora sojae</strong> · 97%<br>🧬 Magainin-2 · 50 µg/mL<div class="wa-time">06:42</div></div>
+        <div class="wa-m u">¿Más candidatos?<div class="wa-time">06:43</div></div>
+        <div class="wa-m b"><div class="wa-m-head">Zea</div>Los 3 mejores rankeados 👇<div class="wa-time">06:43</div></div>
+      </div>
+    </div>
+
+    <div class="amp-mini d-amp">
+      <div class="amp-top"><div class="amp-nm d-amp-nm">Magainin-2</div><div class="amp-badge d-amp-bd">GIGKFLHS…</div></div>
+      <div class="d-amp-sb">Rana esculenta · DRAMP04281</div>
+      <div class="bar-r"><div class="bar-lbl"><span class="d-bar-lbl">Actividad antifúngica</span><span class="d-bar-v">94%</span></div><div class="bar-t d-bar-t"><div class="bar-f d-bar-a" style="width:94%"></div></div></div>
+      <div class="bar-r"><div class="bar-lbl"><span class="d-bar-lbl">Hemólisis</span><span class="d-bar-vo">8%</span></div><div class="bar-t d-bar-to"><div class="bar-f d-bar-h" style="width:8%"></div></div></div>
+    </div>
+
+    <div class="tagline-card d-tc">
+      <div class="wordmark d-tc-w" style="font-size:42px">Z<em class="d-tc-em">ea</em></div>
+      <div class="tagline-mono d-tc-s" style="margin-top:6px">El campo, a tiempo.</div>
+    </div>
+  </div>
+
+  <!-- ══ LIGHT ══ -->
+  <div class="mood-col">
+    <div class="v-label">◻ Light — Brote</div>
+
+    <div class="hero l-hero">
+      <div class="l-glow"></div>
+      <div class="l-glow2"></div>
+      <div class="logo-row">
+        <svg class="z-icon" viewBox="0 0 64 64" fill="none">
+          <rect width="64" height="64" rx="13" fill="rgba(168,216,0,0.12)"/>
+          <path d="M14 16H50L22 48H50" stroke="#1A2208" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="50" cy="16" r="5" fill="#A8D800"/>
+          <circle cx="50" cy="16" r="2.5" fill="#5A8800"/>
+        </svg>
+        <div class="wordmark l-word">Z<em class="l-em">ea</em></div>
+      </div>
+      <div class="tagline-mono l-tag">Biotech Field Agent · Argentina</div>
+      <div class="phrase l-phrase">"El campo, a tiempo."</div>
+    </div>
+
+    <div class="palette-card l-pal">
+      <div class="ps-title l-ps-t">Paleta light</div>
+      <div class="swatches">
+        <div class="sw"><div class="sw-dot" style="background:#F5FDE8;border:1px solid rgba(0,0,0,0.06)"></div><div class="sw-hex l-hex">#F5FDE8</div></div>
+        <div class="sw"><div class="sw-dot" style="background:#E4F5C0;border:1px solid rgba(0,0,0,0.06)"></div><div class="sw-hex l-hex">#E4F5C0</div></div>
+        <div class="sw"><div class="sw-dot" style="background:#A8D800"></div><div class="sw-hex l-hex">#A8D800</div></div>
+        <div class="sw"><div class="sw-dot" style="background:#F5C400"></div><div class="sw-hex l-hex">#F5C400</div></div>
+        <div class="sw"><div class="sw-dot" style="background:#F08020"></div><div class="sw-hex l-hex">#F08020</div></div>
+        <div class="sw"><div class="sw-dot" style="background:#1A2208"></div><div class="sw-hex l-hex">#1A2208</div></div>
+      </div>
+    </div>
+
+    <div class="wa-preview">
+      <div class="wa-bar l-wa-bar"><div class="wa-av l-wa-av">Z</div><div><div class="wa-name l-wa-nm">Zea</div><div class="wa-status l-wa-st">en línea</div></div></div>
+      <div class="wa-chat">
+        <div class="wa-m u">📷 [hoja de soja]<div class="wa-time">06:42</div></div>
+        <div class="wa-m b"><div class="wa-m-head">Zea</div><strong>Phytophthora sojae</strong> · 97%<br>🧬 Magainin-2 · 50 µg/mL<div class="wa-time">06:42</div></div>
+        <div class="wa-m u">¿Más candidatos?<div class="wa-time">06:43</div></div>
+        <div class="wa-m b"><div class="wa-m-head">Zea</div>Los 3 mejores rankeados 👇<div class="wa-time">06:43</div></div>
+      </div>
+    </div>
+
+    <div class="amp-mini l-amp">
+      <div class="amp-top"><div class="amp-nm l-amp-nm">Magainin-2</div><div class="amp-badge l-amp-bd">GIGKFLHS…</div></div>
+      <div class="l-amp-sb">Rana esculenta · DRAMP04281</div>
+      <div class="bar-r"><div class="bar-lbl"><span class="l-bar-lbl">Actividad antifúngica</span><span class="l-bar-v">94%</span></div><div class="bar-t l-bar-t"><div class="bar-f l-bar-a" style="width:94%"></div></div></div>
+      <div class="bar-r"><div class="bar-lbl"><span class="l-bar-lbl">Hemólisis</span><span class="l-bar-vo">8%</span></div><div class="bar-t l-bar-to"><div class="bar-f l-bar-h" style="width:8%"></div></div></div>
+    </div>
+
+    <div class="tagline-card l-tc">
+      <div class="wordmark l-tc-w" style="font-size:42px">Z<em class="l-tc-em">ea</em></div>
+      <div class="tagline-mono l-tc-s" style="margin-top:6px">El campo, a tiempo.</div>
+    </div>
+  </div>
+
+</div>

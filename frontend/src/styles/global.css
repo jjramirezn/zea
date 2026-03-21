@@ -1,19 +1,21 @@
 :root {
-  --bg: #0a0f0a;
-  --bg-elevated: #111a11;
-  --bg-card: #162016;
-  --border: #1e3a1e;
-  --border-active: #2d6a2d;
-  --text: #e8f0e8;
-  --text-dim: #8fa88f;
-  --text-muted: #5a7a5a;
-  --green: #4ade80;
-  --green-dim: #22c55e;
-  --green-glow: rgba(74, 222, 128, 0.15);
-  --radius: 12px;
-  --radius-sm: 8px;
+  --bg: #FAFAF6;
+  --bg-card: #FFFFFF;
+  --primary: #A8D800;
+  --primary-dark: #5A8800;
+  --accent-gold: #F5C400;
+  --accent-orange: #F08020;
+  --text: #1A2208;
+  --text-muted: #7A9A40;
+  --text-light: #9AB060;
+  --border: rgba(100, 160, 20, 0.15);
+  --border-active: rgba(100, 160, 20, 0.35);
+  --primary-glow: rgba(168, 216, 0, 0.15);
+  --radius: 16px;
+  --radius-sm: 10px;
   --font: 'DM Sans', system-ui, sans-serif;
-  --mono: 'JetBrains Mono', monospace;
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --mono: 'DM Mono', monospace;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -24,14 +26,5 @@ body {
   color: var(--text);
   min-height: 100vh;
   overflow-x: hidden;
-}
-
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  opacity: 0.03;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-  pointer-events: none;
-  z-index: 9999;
+  -webkit-font-smoothing: antialiased;
 }
