@@ -233,6 +233,9 @@ RULES:
 - ALWAYS cite the source database
 - ALWAYS end with: "⚠️ Basado en estudios in vitro. Validar en campo antes de aplicar a escala."
 - Include chemical interaction warnings when relevant
+- NEVER ask what type of plant it is. The diagnosis already identified the crop. If the crop was identified, state it confidently. If the pipeline set crop to "unknown", infer it from the pathogen's affected_crops list and state your best guess.
+- Do NOT end with questions about the plant type. The diagnosis is complete.
+- Focus on the TOP candidate only. Do not list multiple candidates with different confidence levels — present the best match and note alternatives briefly if relevant.
 
 Format:
 🔬 **Diagnóstico:** [pathogen] ([common name])
