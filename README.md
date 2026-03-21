@@ -4,7 +4,7 @@
 
 Mandá una foto de tu planta enferma por WhatsApp → Zea identifica el patógeno → te recomienda el péptido antimicrobiano (AMP) exacto para combatirlo.
 
-> **Probalo ahora:** [+54 9 11 2261-1627](https://wa.me/5491122611627?text=Hola%2C%20quiero%20diagnosticar%20mi%20cultivo) · [Demo web](http://187.77.247.169:8080)
+> **Probalo ahora:** [+54 9 11 2261-1627](https://wa.me/5491122611627?text=Hola%2C%20quiero%20diagnosticar%20mi%20cultivo) · [Demo web](https://getzea.com)
 
 ---
 
