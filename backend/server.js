@@ -20,6 +20,8 @@ async function handleChat(userMessages, hasImage) {
   try {
     const jsonStr = phase1Text.replace(/^```json?\n?/m, '').replace(/\n?```$/m, '').trim();
     diagnosis = JSON.parse(jsonStr);
+    console.log('=== PHASE 1 RAW ===');
+    console.log(JSON.stringify(diagnosis, null, 2));
   } catch (e) {
     console.error('Phase 1 JSON parse error:', e.message);
     console.error('Raw output:', phase1Text);
@@ -43,8 +45,20 @@ async function handleChat(userMessages, hasImage) {
   }));
 
   // PHASE 4: AI translates verified results for user
+  // Strip images so Phase 4 cannot re-diagnose from the photo
+  const textOnlyMessages = userMessages.map(msg => {
+    if (msg.role === 'user' && Array.isArray(msg.content)) {
+      const textParts = msg.content.filter(part => part.type === 'text');
+      if (textParts.length === 0) {
+        return { role: 'user', content: [{ type: 'text', text: '[user sent an image]' }] };
+      }
+      return { role: 'user', content: textParts };
+    }
+    return msg;
+  });
+
   const phase4Messages = [
-    ...userMessages,
+    ...textOnlyMessages,
     {
       role: 'assistant',
       content: `[Phase 1 diagnosis complete]`
@@ -59,7 +73,14 @@ ${JSON.stringify(diagnosis, null, 2)}
 Phase 2-3 Deterministic Pipeline (code-verified, cannot be changed):
 ${JSON.stringify(pipelineResult, null, 2)}
 
-Now write a clear, empathetic response for the user based ONLY on these verified results. Do not add any AMP recommendations that are not in the pipeline results.`
+CRITICAL RULES:
+- The diagnosis above is FINAL. Do NOT re-interpret or override it.
+- If amp_matches is empty, say "No tenemos un peptido validado para este patogeno en nuestra base de datos actual."
+- Do NOT recommend AMPs for pathogens that are not in amp_matches.
+- Present the TOP candidate from the diagnosis as-is, even if it has no AMP match.
+- The crop field in the diagnosis is already identified. Use it directly.
+
+Now write a clear, empathetic response for the user based ONLY on these verified results.`
     }
   ];
 
