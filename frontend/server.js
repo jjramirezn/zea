@@ -351,6 +351,40 @@ Now write a clear, empathetic response for the user based ONLY on these verified
 
 const conversationHistory = new Map();
 
+// ═══════════════════════════════════════════
+// RATE LIMITING
+// ═══════════════════════════════════════════
+
+const rateLimits = new Map(); // key -> { count, resetAt }
+const RATE_LIMIT = 10; // requests per window
+const RATE_WINDOW_MS = 60 * 60 * 1000; // 1 hour
+
+// Demo bypass tokens (add more as needed)
+const DEMO_BYPASS_TOKENS = new Set([
+  'aleph-hackathon-2026',
+  'amp-demo-bypass'
+]);
+
+function checkRateLimit(key) {
+  const now = Date.now();
+  let entry = rateLimits.get(key);
+  if (!entry || now > entry.resetAt) {
+    entry = { count: 0, resetAt: now + RATE_WINDOW_MS };
+    rateLimits.set(key, entry);
+  }
+  entry.count++;
+  rateLimits.set(key, entry);
+  return {
+    allowed: entry.count <= RATE_LIMIT,
+    remaining: Math.max(0, RATE_LIMIT - entry.count),
+    resetAt: entry.resetAt
+  };
+}
+
+function getClientIP(req) {
+  return req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.socket.remoteAddress || 'unknown';
+}
+
 function parseMultipart(req) {
   return new Promise((resolve, reject) => {
     const chunks = [];
@@ -421,6 +455,37 @@ const server = http.createServer(async (req, res) => {
       const text = parts.message || '';
       const image = parts.image;
       const sessionId = req.headers['x-session-id'] || 'default';
+      const bypassToken = req.headers['x-demo-token'] || parts.demo_token || '';
+
+      // Rate limit check (bypass with demo token)
+      if (!DEMO_BYPASS_TOKENS.has(bypassToken)) {
+        const clientIP = getClientIP(req);
+        const limit = checkRateLimit(clientIP);
+        if (!limit.allowed) {
+          // x402 Payment Required
+          res.writeHead(402, {
+            'Content-Type': 'application/json',
+            'X-Payment-Required': 'true',
+            'X-Payment-Amount': '0.50',
+            'X-Payment-Currency': 'USDC',
+            'X-RateLimit-Limit': String(RATE_LIMIT),
+            'X-RateLimit-Remaining': '0',
+            'X-RateLimit-Reset': String(limit.resetAt)
+          });
+          res.end(JSON.stringify({
+            error: 'rate_limit_exceeded',
+            message: 'Has alcanzado el límite de diagnósticos gratuitos. Para continuar, realizá un pago de $0.50 USDC por diagnóstico.',
+            payment: {
+              amount: '0.50',
+              currency: 'USDC',
+              protocol: 'x402',
+              recipient: '0x0000000000000000000000000000000000000000' // placeholder
+            },
+            resetAt: new Date(limit.resetAt).toISOString()
+          }));
+          return;
+        }
+      }
 
       const content = [];
       let hasImage = false;

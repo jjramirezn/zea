@@ -715,6 +715,10 @@
     let selectedImage = null;
     let isProcessing = false;
 
+    // Demo bypass: add ?demo=aleph-hackathon-2026 to URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const DEMO_TOKEN = urlParams.get('demo') || '';
+
     function scrollToChat() {
       document.getElementById('chat-section').scrollIntoView({ behavior: 'smooth' });
       setTimeout(() => document.getElementById('chatInput').focus(), 500);
@@ -819,12 +823,24 @@
         if (text) formData.append('message', text);
         if (imageToSend) formData.append('image', imageToSend);
 
+        const headers = {};
+        if (DEMO_TOKEN) headers['X-Demo-Token'] = DEMO_TOKEN;
+
         const res = await fetch(API_URL, {
           method: 'POST',
           body: formData,
+          headers,
         });
 
         hideTyping();
+
+        if (res.status === 402) {
+          const data = await res.json();
+          addMessage(`⚠️ ${data.message}\n\n💰 Para demo sin límite, agregá \`?demo=aleph-hackathon-2026\` a la URL.`, 'agent');
+          isProcessing = false;
+          document.getElementById('sendBtn').disabled = false;
+          return;
+        }
 
         if (!res.ok) throw new Error('Error del servidor');
 
