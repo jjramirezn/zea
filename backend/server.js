@@ -1,3 +1,5 @@
+import fs from 'fs';
+import path from 'path';
 import http from 'http';
 
 import { PHASE1_PROMPT, PHASE1_TEXT_PROMPT, PHASE4_SYSTEM } from './prompts.js';
@@ -160,6 +162,20 @@ const server = http.createServer(async (req, res) => {
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-Session-Id');
   if (req.method === 'OPTIONS') { res.writeHead(204); res.end(); return; }
+
+  // Serve Astro static frontend
+  if (req.method === 'GET' && !req.url.startsWith('/api/')) {
+    const distDir = '/root/hackathon-amp/frontend/dist';
+    let fp = req.url === '/' ? distDir + '/index.html' : distDir + req.url;
+    try {
+      const data = fs.readFileSync(fp);
+      const ext = fp.split('.').pop();
+      const types = {html:'text/html',css:'text/css',js:'application/javascript',svg:'image/svg+xml',ico:'image/x-icon',png:'image/png',jpg:'image/jpeg',woff2:'font/woff2'};
+      res.writeHead(200, {'Content-Type': types[ext] || 'application/octet-stream'});
+      res.end(data);
+      return;
+    } catch(e) {}
+  }
 
   if (req.method === 'GET' && req.url === '/api/health') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
