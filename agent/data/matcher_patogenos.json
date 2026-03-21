@@ -1,0 +1,47 @@
+[
+  {
+    "pathogen": "Botrytis cinerea",
+    "pathogen_type": "Fungus",
+    "affected_crop": "Frutillas, Tomates, Uvas",
+    "amp_name": "RsAFP2",
+    "sequence": "QKLCERPSGTWSGVCGNNNACKNQCINLEKARHGSCNYVFPAHKCICYFPC",
+    "effective_concentration_mic": "1-5 µg/mL",
+    "source_db": "APD3 / DBAASP (Plant defensin)"
+  },
+  {
+    "pathogen": "Pseudomonas syringae",
+    "pathogen_type": "Gram-negative Bacteria",
+    "affected_crop": "Tomate, Kiwi, Porotos",
+    "amp_name": "BP100",
+    "sequence": "KKLFKKILKYL",
+    "effective_concentration_mic": "2.5-5.0 µM",
+    "source_db": "DBAASP / CAMP (Synthetic AMP)"
+  },
+  {
+    "pathogen": "Xanthomonas campestris",
+    "pathogen_type": "Gram-negative Bacteria",
+    "affected_crop": "Crucíferas (Repollo, Brócoli), Pimientos",
+    "amp_name": "D4E1",
+    "sequence": "FKLRAKIKVRLRAKIKL",
+    "effective_concentration_mic": "5-10 µM",
+    "source_db": "DBAASP (Synthetic chimera)"
+  },
+  {
+    "pathogen": "Ralstonia solanacearum",
+    "pathogen_type": "Gram-negative Bacteria",
+    "affected_crop": "Papa, Banano, Tabaco",
+    "amp_name": "Esculentin-1a(1-21)NH2",
+    "sequence": "GIFSKLAGKKIKNLLISGLKG",
+    "effective_concentration_mic": "1.5-3.0 µM",
+    "source_db": "DBAASP / DRAMP"
+  },
+  {
+    "pathogen": "Pectobacterium carotovorum",
+    "pathogen_type": "Gram-negative Bacteria",
+    "affected_crop": "Papa, Zanahoria, Vegetales carnosos",
+    "amp_name": "Cecropin A",
+    "sequence": "KWKLFKKIEKVGQNIRDGIIKAGPAVAVVGQATQIAK",
+    "effective_concentration_mic": "0.5-2.0 µM",
+    "source_db": "APD3 / DBAASP"
+  }
+]

@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AMP Field Agent — Diagnóstico Inteligente de Cultivos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0f0a;
+      --bg-elevated: #111a11;
+      --bg-card: #162016;
+      --border: #1e3a1e;
+      --border-active: #2d6a2d;
+      --text: #e8f0e8;
+      --text-dim: #8fa88f;
+      --text-muted: #5a7a5a;
+      --green: #4ade80;
+      --green-dim: #22c55e;
+      --green-glow: rgba(74, 222, 128, 0.15);
+      --amber: #fbbf24;
+      --red: #f87171;
+      --chat-user: #1a2e1a;
+      --chat-agent: #0f1a0f;
+      --radius: 12px;
+      --radius-sm: 8px;
+      --font: 'DM Sans', system-ui, sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Grain overlay ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      opacity: 0.03;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* ── Navigation ── */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding: 16px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(10, 15, 10, 0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: -0.3px;
+    }
+
+    .logo-icon {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, var(--green), var(--green-dim));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-dim);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--green); }
+
+    .nav-cta {
+      background: var(--green);
+      color: var(--bg);
+      border: none;
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-family: var(--font);
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .nav-cta:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 20px var(--green-glow);
+    }
+
+    /* ── Hero ── */
+    .hero {
+      padding: 140px 32px 80px;
+      max-width: 1200px;
+      margin: 0 auto;
+      text-align: center;
+      position: relative;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      font-size: 13px;
+      color: var(--text-dim);
+      margin-bottom: 32px;
+    }
+
+    .hero-badge .dot {
+      width: 6px;
+      height: 6px;
+      background: var(--green);
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    h1 {
+      font-size: clamp(40px, 7vw, 72px);
+      font-weight: 700;
+      line-height: 1.05;
+      letter-spacing: -2px;
+      margin-bottom: 24px;
+    }
+
+    h1 .highlight {
+      background: linear-gradient(135deg, var(--green), #86efac);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: 18px;
+      color: var(--text-dim);
+      max-width: 600px;
+      margin: 0 auto 48px;
+      line-height: 1.6;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      background: var(--green);
+      color: var(--bg);
+      border: none;
+      padding: 14px 32px;
+      border-radius: 28px;
+      font-family: var(--font);
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px var(--green-glow);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 14px 32px;
+      border-radius: 28px;
+      font-family: var(--font);
+      font-weight: 500;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--border-active);
+      background: var(--bg-elevated);
+    }
+
+    /* ── Stats ── */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      max-width: 900px;
+      margin: 80px auto 0;
+    }
+
+    .stat {
+      background: var(--bg-elevated);
+      padding: 32px 24px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--green);
+      font-family: var(--mono);
+    }
+
+    .stat-label {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    /* ── How it works ── */
+    .section {
+      padding: 100px 32px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--green);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-size: clamp(28px, 4vw, 42px);
+      font-weight: 700;
+      letter-spacing: -1px;
+      margin-bottom: 60px;
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .step {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 36px 28px;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+
+    .step:hover {
+      border-color: var(--border-active);
+      transform: translateY(-4px);
+    }
+
+    .step-number {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--green);
+      margin-bottom: 16px;
+    }
+
+    .step-icon {
+      font-size: 36px;
+      margin-bottom: 16px;
+    }
+
+    .step h3 {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .step p {
+      font-size: 14px;
+      color: var(--text-dim);
+      line-height: 1.6;
+    }
+
+    /* ── Chat section ── */
+    #chat-section {
+      padding: 100px 32px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .chat-container {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      height: 600px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chat-header {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .chat-header-dot {
+      width: 10px;
+      height: 10px;
+      background: var(--green);
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .chat-header-info h3 {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .chat-header-info span {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
+
+    .message {
+      max-width: 80%;
+      padding: 14px 18px;
+      border-radius: var(--radius);
+      font-size: 14px;
+      line-height: 1.6;
+      animation: messageIn 0.3s ease-out;
+    }
+
+    @keyframes messageIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .message-user {
+      align-self: flex-end;
+      background: var(--chat-user);
+      border: 1px solid var(--border);
+    }
+
+    .message-agent {
+      align-self: flex-start;
+      background: var(--chat-agent);
+      border: 1px solid var(--border);
+    }
+
+    .message-agent .agent-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--green);
+      margin-bottom: 6px;
+      font-family: var(--mono);
+    }
+
+    .message img {
+      max-width: 100%;
+      border-radius: var(--radius-sm);
+      margin-top: 8px;
+    }
+
+    .message pre {
+      background: var(--bg);
+      padding: 12px;
+      border-radius: var(--radius-sm);
+      margin-top: 8px;
+      font-family: var(--mono);
+      font-size: 12px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+    }
+
+    .typing {
+      display: flex;
+      gap: 4px;
+      padding: 14px 18px;
+      align-self: flex-start;
+    }
+
+    .typing span {
+      width: 8px;
+      height: 8px;
+      background: var(--text-muted);
+      border-radius: 50%;
+      animation: typing 1.4s ease-in-out infinite;
+    }
+
+    .typing span:nth-child(2) { animation-delay: 0.2s; }
+    .typing span:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes typing {
+      0%, 100% { opacity: 0.3; transform: scale(0.8); }
+      50% { opacity: 1; transform: scale(1); }
+    }
+
+    .chat-input-area {
+      padding: 16px 24px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 12px;
+      align-items: end;
+    }
+
+    .chat-input-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .image-preview {
+      display: none;
+      position: relative;
+      width: fit-content;
+    }
+
+    .image-preview img {
+      max-height: 80px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+    }
+
+    .image-preview .remove-img {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      width: 20px;
+      height: 20px;
+      background: var(--red);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      font-size: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .chat-input {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 14px;
+      resize: none;
+      outline: none;
+      transition: border-color 0.2s;
+      min-height: 44px;
+      max-height: 120px;
+    }
+
+    .chat-input:focus { border-color: var(--border-active); }
+
+    .chat-input::placeholder { color: var(--text-muted); }
+
+    .chat-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text-dim);
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .btn-icon:hover {
+      border-color: var(--border-active);
+      color: var(--green);
+    }
+
+    .btn-send {
+      background: var(--green);
+      color: var(--bg);
+      border-color: var(--green);
+    }
+
+    .btn-send:hover {
+      background: var(--green-dim);
+      border-color: var(--green-dim);
+    }
+
+    .btn-send:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    /* ── Footer ── */
+    footer {
+      padding: 40px 32px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    footer a {
+      color: var(--green);
+      text-decoration: none;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .steps { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+      .chat-container { height: 500px; }
+      .message { max-width: 90%; }
+    }
+
+    /* ── Drop zone ── */
+    .chat-messages.dragover {
+      background: var(--green-glow);
+      border: 2px dashed var(--green);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Nav -->
+  <nav>
+    <div class="logo">
+      <div class="logo-icon">🧬</div>
+      AMP Field Agent
+    </div>
+    <ul class="nav-links">
+      <li><a href="#how">Cómo funciona</a></li>
+      <li><a href="#chat-section">Probar agente</a></li>
+    </ul>
+    <button class="nav-cta" onclick="scrollToChat()">Diagnosticar cultivo →</button>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-badge">
+      <span class="dot"></span>
+      Aleph Hackathon 2026
+    </div>
+    <h1>
+      Diagnóstico de cultivos<br>
+      con <span class="highlight">péptidos antimicrobianos</span>
+    </h1>
+    <p class="hero-sub">
+      Enviá una foto de tu cultivo. Nuestro agente identifica el patógeno
+      y recomienda péptidos antimicrobianos personalizados — ciencia de laboratorio
+      directo al campo.
+    </p>
+    <div class="hero-actions">
+      <button class="btn-primary" onclick="scrollToChat()">Probar diagnóstico</button>
+      <button class="btn-secondary" onclick="document.getElementById('how').scrollIntoView({behavior:'smooth'})">Cómo funciona</button>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-value">$3.1B</div>
+        <div class="stat-label">Agroquímicos AR / año</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">20-40%</div>
+        <div class="stat-label">Pérdida de cosechas</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">800</div>
+        <div class="stat-label">Cooperativas registradas</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">112K</div>
+        <div class="stat-label">Productores asociados</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section class="section" id="how">
+    <div class="section-label">Proceso</div>
+    <h2 class="section-title">Tres pasos. Un diagnóstico.</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-number">01</div>
+        <div class="step-icon">📸</div>
+        <h3>Fotografiá</h3>
+        <p>Sacale una foto a la planta afectada. El agente usa visión artificial para identificar signos de enfermedad — lesiones, moho, manchas, patrones de marchitez.</p>
+      </div>
+      <div class="step">
+        <div class="step-number">02</div>
+        <div class="step-icon">🔬</div>
+        <h3>Diagnóstico</h3>
+        <p>El modelo identifica el patógeno más probable y lo cruza con nuestra base de datos curada de péptidos antimicrobianos con eficacia comprobada.</p>
+      </div>
+      <div class="step">
+        <div class="step-number">03</div>
+        <div class="step-icon">🧬</div>
+        <h3>Recomendación</h3>
+        <p>Recibís una recomendación personalizada: péptido específico, concentración, método de aplicación y referencias científicas.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Chat -->
+  <section id="chat-section">
+    <div class="section-label">Demo en vivo</div>
+    <h2 class="section-title">Probá el agente</h2>
+    <div class="chat-container">
+      <div class="chat-header">
+        <div class="chat-header-dot"></div>
+        <div class="chat-header-info">
+          <h3>AMP Field Agent</h3>
+          <span>Agente de diagnóstico • En línea</span>
+        </div>
+      </div>
+      <div class="chat-messages" id="chatMessages">
+        <div class="message message-agent">
+          <div class="agent-label">AMP AGENT</div>
+          ¡Hola! Soy tu agente de diagnóstico de cultivos. Enviame una foto de la planta afectada o describí los síntomas que observás. Te voy a recomendar péptidos antimicrobianos específicos para tu caso.
+        </div>
+      </div>
+      <div class="chat-input-area">
+        <div class="chat-input-wrapper">
+          <div class="image-preview" id="imagePreview">
+            <img id="previewImg" src="" alt="preview">
+            <button class="remove-img" onclick="removeImage()">×</button>
+          </div>
+          <textarea
+            class="chat-input"
+            id="chatInput"
+            placeholder="Describí los síntomas o subí una foto..."
+            rows="1"
+            onkeydown="handleKey(event)"
+            oninput="autoResize(this)"
+          ></textarea>
+        </div>
+        <div class="chat-actions">
+          <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="handleFile(event)">
+          <button class="btn-icon" onclick="document.getElementById('fileInput').click()" title="Subir imagen">📷</button>
+          <button class="btn-icon btn-send" id="sendBtn" onclick="sendMessage()" title="Enviar">↑</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>AMP Field Agent — Hackathon Aleph 2026 · Construido con <a href="https://openclaw.ai" target="_blank">OpenClaw</a></p>
+  </footer>
+
+  <script>
+    const API_URL = '/api/chat';
+    let selectedImage = null;
+    let isProcessing = false;
+
+    function scrollToChat() {
+      document.getElementById('chat-section').scrollIntoView({ behavior: 'smooth' });
+      setTimeout(() => document.getElementById('chatInput').focus(), 500);
+    }
+
+    function autoResize(el) {
+      el.style.height = 'auto';
+      el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+    }
+
+    function handleKey(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    }
+
+    function handleFile(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      selectedImage = file;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        document.getElementById('previewImg').src = ev.target.result;
+        document.getElementById('imagePreview').style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function removeImage() {
+      selectedImage = null;
+      document.getElementById('imagePreview').style.display = 'none';
+      document.getElementById('fileInput').value = '';
+    }
+
+    function addMessage(text, type, imageUrl) {
+      const msgs = document.getElementById('chatMessages');
+      const div = document.createElement('div');
+      div.className = `message message-${type}`;
+      
+      let html = '';
+      if (type === 'agent') html += '<div class="agent-label">AMP AGENT</div>';
+      if (imageUrl) html += `<img src="${imageUrl}" alt="uploaded">`;
+      html += formatMessage(text);
+      
+      div.innerHTML = html;
+      msgs.appendChild(div);
+      msgs.scrollTop = msgs.scrollHeight;
+      return div;
+    }
+
+    function formatMessage(text) {
+      // Basic markdown-like formatting
+      return text
+        .replace(/```([\s\S]*?)```/g, '<pre>$1</pre>')
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\n/g, '<br>');
+    }
+
+    function showTyping() {
+      const msgs = document.getElementById('chatMessages');
+      const div = document.createElement('div');
+      div.className = 'typing';
+      div.id = 'typingIndicator';
+      div.innerHTML = '<span></span><span></span><span></span>';
+      msgs.appendChild(div);
+      msgs.scrollTop = msgs.scrollHeight;
+    }
+
+    function hideTyping() {
+      const el = document.getElementById('typingIndicator');
+      if (el) el.remove();
+    }
+
+    async function sendMessage() {
+      if (isProcessing) return;
+      const input = document.getElementById('chatInput');
+      const text = input.value.trim();
+      if (!text && !selectedImage) return;
+
+      isProcessing = true;
+      document.getElementById('sendBtn').disabled = true;
+
+      // Capture image before clearing
+      const imageToSend = selectedImage;
+      let imgUrl = null;
+      if (imageToSend) {
+        imgUrl = document.getElementById('previewImg').src;
+      }
+      addMessage(text || '📷 Imagen enviada', 'user', imgUrl);
+
+      // Clear input
+      input.value = '';
+      autoResize(input);
+      removeImage();
+
+      // Show typing
+      showTyping();
+
+      try {
+        const formData = new FormData();
+        if (text) formData.append('message', text);
+        if (imageToSend) formData.append('image', imageToSend);
+
+        const res = await fetch(API_URL, {
+          method: 'POST',
+          body: formData,
+        });
+
+        hideTyping();
+
+        if (!res.ok) throw new Error('Error del servidor');
+
+        const data = await res.json();
+        addMessage(data.reply, 'agent');
+      } catch (err) {
+        hideTyping();
+        addMessage('Error al procesar la solicitud. Intentá de nuevo.', 'agent');
+        console.error(err);
+      }
+
+      selectedImage = null;
+      isProcessing = false;
+      document.getElementById('sendBtn').disabled = false;
+    }
+
+    // Drag and drop
+    const chatMsgs = document.getElementById('chatMessages');
+    chatMsgs.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      chatMsgs.classList.add('dragover');
+    });
+    chatMsgs.addEventListener('dragleave', () => chatMsgs.classList.remove('dragover'));
+    chatMsgs.addEventListener('drop', (e) => {
+      e.preventDefault();
+      chatMsgs.classList.remove('dragover');
+      const file = e.dataTransfer.files[0];
+      if (file && file.type.startsWith('image/')) {
+        selectedImage = file;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          document.getElementById('previewImg').src = ev.target.result;
+          document.getElementById('imagePreview').style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  </script>
+</body>
+</html>

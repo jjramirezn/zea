@@ -1,0 +1,137 @@
+{
+  "version": "0.1.0",
+  "last_updated": "2026-03-21",
+  "sources": ["APD3", "DRAMP", "PubMed literature"],
+  "pathogens": [
+    {
+      "id": "botrytis_cinerea",
+      "name": "Botrytis cinerea",
+      "common_name": "Gray mold",
+      "type": "fungal",
+      "affected_crops": ["tomato", "grape", "strawberry", "lettuce", "cucumber"],
+      "symptoms": "Gray fuzzy mold on fruits/leaves, soft brown lesions, water-soaked spots",
+      "effective_amps": [
+        {
+          "name": "Cecropin A",
+          "sequence": "KWKLFKKIEKVGQNIRDGIIKAGPAVAVVGQATQIAK",
+          "source": "APD3",
+          "mic_ug_ml": 25,
+          "mechanism": "Membrane disruption",
+          "notes": "Broad-spectrum, well-studied"
+        },
+        {
+          "name": "Magainin 2",
+          "sequence": "GIGKFLHSAKKFGKAFVGEIMNS",
+          "source": "APD3",
+          "mic_ug_ml": 50,
+          "mechanism": "Pore formation in fungal membranes",
+          "notes": "Originally from African clawed frog"
+        }
+      ]
+    },
+    {
+      "id": "pectobacterium_carotovorum",
+      "name": "Pectobacterium carotovorum",
+      "common_name": "Bacterial soft rot",
+      "type": "bacterial",
+      "affected_crops": ["potato", "carrot", "onion", "tomato", "pepper"],
+      "symptoms": "Water-soaked lesions, soft mushy tissue, foul odor, rapid tissue maceration",
+      "effective_amps": [
+        {
+          "name": "Nisin",
+          "sequence": "ITSISLCTPGCKTGALMGCNMKTATCHCSIHVSK",
+          "source": "DRAMP",
+          "mic_ug_ml": 10,
+          "mechanism": "Lipid II binding, pore formation",
+          "notes": "FDA-approved food preservative, well-characterized"
+        },
+        {
+          "name": "Polymyxin B",
+          "sequence": "Cyclic lipopeptide",
+          "source": "DRAMP",
+          "mic_ug_ml": 5,
+          "mechanism": "LPS binding, membrane disruption",
+          "notes": "Effective against gram-negative bacteria"
+        }
+      ]
+    },
+    {
+      "id": "pseudomonas_syringae",
+      "name": "Pseudomonas syringae",
+      "common_name": "Bacterial speck / fire blight",
+      "type": "bacterial",
+      "affected_crops": ["tomato", "bean", "apple", "pear", "cherry"],
+      "symptoms": "Small dark spots with yellow halos on leaves, water-soaked lesions, shoot blight",
+      "effective_amps": [
+        {
+          "name": "Dermaseptin S1",
+          "sequence": "ALWKTMLKKLGTMALHAGKAALGAAADTISQGTQ",
+          "source": "APD3",
+          "mic_ug_ml": 15,
+          "mechanism": "Membrane permeabilization",
+          "notes": "From tree frog skin secretions"
+        },
+        {
+          "name": "Cecropin B",
+          "sequence": "KWKVFKKIEKMGRNIRNGIVKAGPAIAVLGEAKAL",
+          "source": "APD3",
+          "mic_ug_ml": 20,
+          "mechanism": "Membrane disruption",
+          "notes": "Synergistic with other AMPs"
+        }
+      ]
+    },
+    {
+      "id": "xanthomonas_vesicatoria",
+      "name": "Xanthomonas vesicatoria",
+      "common_name": "Bacterial spot",
+      "type": "bacterial",
+      "affected_crops": ["tomato", "pepper", "citrus"],
+      "symptoms": "Water-soaked spots turning brown/black, leaf yellowing, fruit scabs",
+      "effective_amps": [
+        {
+          "name": "Melittin",
+          "sequence": "GIGAVLKVLTTGLPALISWIKRKRQQ",
+          "source": "APD3",
+          "mic_ug_ml": 8,
+          "mechanism": "Membrane lysis via toroidal pores",
+          "notes": "From bee venom, potent but may need modification for plant safety"
+        },
+        {
+          "name": "Thanatin",
+          "sequence": "GSKKPVPIIYCNRRTGKCQRM",
+          "source": "DRAMP",
+          "mic_ug_ml": 12,
+          "mechanism": "Outer membrane disruption",
+          "notes": "From spined soldier bug, effective against gram-negative"
+        }
+      ]
+    },
+    {
+      "id": "ralstonia_solanacearum",
+      "name": "Ralstonia solanacearum",
+      "common_name": "Bacterial wilt",
+      "type": "bacterial",
+      "affected_crops": ["tomato", "potato", "banana", "tobacco", "eggplant"],
+      "symptoms": "Rapid wilting without yellowing, brown vascular tissue, bacterial ooze from cut stems",
+      "effective_amps": [
+        {
+          "name": "Indolicidin",
+          "sequence": "ILPWKWPWWPWRR",
+          "source": "APD3",
+          "mic_ug_ml": 30,
+          "mechanism": "Membrane disruption + DNA binding",
+          "notes": "Short peptide (13aa), cost-effective to synthesize"
+        },
+        {
+          "name": "Protegrin-1",
+          "sequence": "RGGRLCYCRRRFCVCVGR",
+          "source": "DRAMP",
+          "mic_ug_ml": 15,
+          "mechanism": "Beta-hairpin, membrane pore formation",
+          "notes": "From porcine leukocytes, broad-spectrum"
+        }
+      ]
+    }
+  ]
+}
