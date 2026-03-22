@@ -5,6 +5,7 @@ import http from 'http';
 import { PHASE1_PROMPT, PHASE1_TEXT_PROMPT, PHASE4_SYSTEM } from './prompts.js';
 import { deterministicPipeline } from './pipeline.js';
 import { callClaude, MODELS } from './claude.js';
+import { log } from './logger.js';
 
 const PORT = process.env.PORT || 3000;
 
@@ -22,11 +23,9 @@ async function handleChat(userMessages, hasImage) {
   try {
     const jsonStr = phase1Text.replace(/^```json?\n?/m, '').replace(/\n?```$/m, '').trim();
     diagnosis = JSON.parse(jsonStr);
-    console.log('=== PHASE 1 RAW ===');
-    console.log(JSON.stringify(diagnosis, null, 2));
+    log.info('PHASE1', diagnosis);
   } catch (e) {
-    console.error('Phase 1 JSON parse error:', e.message);
-    console.error('Raw output:', phase1Text);
+    log.error('PHASE1', { error: e.message, raw: phase1Text });
     return 'Error al procesar el diagnóstico. Por favor intentá de nuevo con una imagen más clara.';
   }
 
@@ -38,13 +37,7 @@ async function handleChat(userMessages, hasImage) {
   // PHASE 2 & 3: Deterministic pipeline (NO AI)
   const pipelineResult = deterministicPipeline(diagnosis);
 
-  console.log('=== PIPELINE ===');
-  console.log('Diagnosis:', JSON.stringify(diagnosis, null, 2));
-  console.log('Pipeline result:', JSON.stringify({
-    blocked: pipelineResult.blocked,
-    amp_matches: pipelineResult.amp_matches.length,
-    has_env_context: !!pipelineResult.environmental_context
-  }));
+  log.diagnosis(userMessages[0]?.sessionId || 'unknown', diagnosis, pipelineResult);
 
   // PHASE 4: AI translates verified results for user
   // Strip images so Phase 4 cannot re-diagnose from the photo
@@ -272,7 +265,7 @@ const server = http.createServer(async (req, res) => {
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ reply }));
     } catch (err) {
-      console.error('Chat error:', err);
+      log.error('CHAT', { error: err.message, stack: err.stack });
       res.writeHead(500, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: err.message }));
     }
@@ -284,9 +277,5 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(PORT, '0.0.0.0', () => {
-  console.log(`AMP Field Agent (Hybrid Pipeline v2) running at http://0.0.0.0:${PORT}`);
-  console.log(`  Phase 1: AI -> structured JSON diagnosis`);
-  console.log(`  Phase 2: Code -> deterministic AMP lookup`);
-  console.log(`  Phase 3: Code -> biosecurity check`);
-  console.log(`  Phase 4: AI -> farmer-friendly translation`);
+  log.info('SERVER', `AMP Field Agent running at http://0.0.0.0:${PORT}`);
 });

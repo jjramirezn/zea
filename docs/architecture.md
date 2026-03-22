@@ -70,6 +70,7 @@ backend/
   prompts.js     -- PHASE1_PROMPT, PHASE1_TEXT_PROMPT, PHASE4_SYSTEM
   pipeline.js    -- Data loading + deterministic functions (lookups, biosecurity, pipeline)
   claude.js      -- callClaude (Anthropic API wrapper)
+  logger.js      -- File logger (writes to /tmp/zea/zea-YYYY-MM-DD.log)
 
 frontend/
   index.html     -- Static landing page (WhatsApp CTA only, no API connection)
@@ -95,6 +96,41 @@ frontend/
 5. **Confidence levels:** Each diagnosis includes HIGH/MEDIUM/LOW confidence with defined criteria.
 6. **User authority:** If the user names their crop, the system trusts them over visual identification.
 7. **Mandatory disclaimer:** Every recommendation ends with an in-vitro validation warning.
+
+## Logging
+
+Logs are written to `/tmp/zea/` (configurable via `ZEA_LOG_DIR` env var). One file per day: `zea-YYYY-MM-DD.log`.
+
+**Format:**
+```
+[2026-03-22T02:09:23.651Z] [INFO] [SERVER] AMP Field Agent running at http://0.0.0.0:8080
+[2026-03-22T02:10:01.123Z] [INFO] [PHASE1] { "crop": "strawberry", "candidates": [...] }
+[2026-03-22T02:10:02.456Z] [INFO] [PIPELINE] { "session": "abc", "diagnosis": {...}, "pipeline": {...} }
+[2026-03-22T02:10:05.789Z] [ERROR] [CHAT] { "error": "...", "stack": "..." }
+```
+
+**Categories:**
+- `SERVER` -- startup
+- `PHASE1` -- raw Phase 1 JSON output (what the AI diagnosed)
+- `PIPELINE` -- diagnosis + deterministic pipeline result (AMP matches, blocked status)
+- `CHAT` -- request errors
+
+**Useful commands on the VPS:**
+```bash
+# Follow logs live
+tail -f /tmp/zea/zea-$(date +%F).log
+
+# Show only errors
+grep ERROR /tmp/zea/zea-$(date +%F).log
+
+# Show all Phase 1 diagnoses
+grep PHASE1 /tmp/zea/zea-$(date +%F).log
+
+# Show pipeline results (blocked, AMP matches)
+grep PIPELINE /tmp/zea/zea-$(date +%F).log
+```
+
+Errors are also written to stderr so systemd/journalctl captures them.
 
 ## Rate Limiting and Payments
 
