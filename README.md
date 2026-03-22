@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="frontend/public/zea-logo.jpg" alt="Zea" width="120" />
+</p>
+
 # Zea -- AMP Field Agent
 
 **Crop diagnostics + antimicrobial peptide recommendations via WhatsApp.**
