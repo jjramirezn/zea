@@ -8,6 +8,9 @@ import { deterministicPipeline } from './pipeline.js';
 import { callClaude, MODELS } from './claude.js';
 import { log } from './logger.js';
 import { init as initVault, payForDiagnosis, getVaultStatus, VAULT_ADDRESS } from './vault.js';
+import { classifyImage, buildDiagnosisFromLocal } from './classifier.js';
+
+const MOBILENET_CONFIDENCE_THRESHOLD = 0.80;
 
 const PORT = process.env.PORT || 3000;
 
@@ -15,20 +18,39 @@ const PORT = process.env.PORT || 3000;
 // MAIN PIPELINE HANDLER
 // ═══════════════════════════════════════════
 
-async function handleChat(userMessages, hasImage) {
-  // PHASE 1: AI Diagnosis → structured JSON
-  const systemPrompt = hasImage ? PHASE1_PROMPT : PHASE1_TEXT_PROMPT;
-  const phase1Response = await callClaude(systemPrompt, userMessages, { model: MODELS.phase1 });
-  const phase1Text = phase1Response.content.find(c => c.type === 'text')?.text || '';
-
+async function handleChat(userMessages, hasImage, imgBuffer) {
   let diagnosis;
-  try {
-    const jsonStr = phase1Text.replace(/^```json?\n?/m, '').replace(/\n?```$/m, '').trim();
-    diagnosis = JSON.parse(jsonStr);
-    log.info('PHASE1', diagnosis);
-  } catch (e) {
-    log.error('PHASE1', { error: e.message, raw: phase1Text });
-    return 'Error al procesar el diagnóstico. Por favor intentá de nuevo con una imagen más clara.';
+
+  // Try local MobileNetV2 classification first (only for images)
+  if (hasImage && imgBuffer) {
+    try {
+      const localResult = await classifyImage(imgBuffer);
+      if (localResult.label && localResult.confidence >= MOBILENET_CONFIDENCE_THRESHOLD) {
+        diagnosis = buildDiagnosisFromLocal(localResult);
+        log.info('CLASSIFY', `MobileNet: ${localResult.label} (${(localResult.confidence * 100).toFixed(0)}%) — using local`);
+      } else {
+        const pct = localResult.label ? (localResult.confidence * 100).toFixed(0) : '0';
+        log.info('CLASSIFY', `MobileNet: ${localResult.label || 'failed'} (${pct}%) — falling back to Claude`);
+      }
+    } catch (e) {
+      log.warn('CLASSIFY', `MobileNet error: ${e.message} — falling back to Claude`);
+    }
+  }
+
+  // PHASE 1: Fall back to Claude Vision if local model didn't produce a confident result
+  if (!diagnosis) {
+    const systemPrompt = hasImage ? PHASE1_PROMPT : PHASE1_TEXT_PROMPT;
+    const phase1Response = await callClaude(systemPrompt, userMessages, { model: MODELS.phase1 });
+    const phase1Text = phase1Response.content.find(c => c.type === 'text')?.text || '';
+
+    try {
+      const jsonStr = phase1Text.replace(/^```json?\n?/m, '').replace(/\n?```$/m, '').trim();
+      diagnosis = JSON.parse(jsonStr);
+      log.info('PHASE1', diagnosis);
+    } catch (e) {
+      log.error('PHASE1', { error: e.message, raw: phase1Text });
+      return 'Error al procesar el diagnóstico. Por favor intentá de nuevo con una imagen más clara.';
+    }
   }
 
   if (diagnosis.needs_more_info) {
@@ -290,7 +312,7 @@ const server = http.createServer(async (req, res) => {
       history.push({ role: 'user', content });
       while (history.length > 20) history.shift();
 
-      const reply = await handleChat(history, hasImage);
+      const reply = await handleChat(history, hasImage, hasImage ? imgBuffer : null);
 
       // Store only text in history — don't keep base64 images in memory
       const textOnlyContent = content.filter(p => p.type !== 'image');
