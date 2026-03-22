@@ -1,0 +1,13 @@
+{
+  "name": "agent-wallet",
+  "version": "1.0.0",
+  "description": "AgentVault skill — AI agent wallet with human-defined spending guardrails on Base",
+  "private": true,
+  "scripts": {
+    "vault": "tsx vault.ts"
+  },
+  "dependencies": {
+    "ethers": "^6.13.0",
+    "tsx": "^4.7.0"
+  }
+}

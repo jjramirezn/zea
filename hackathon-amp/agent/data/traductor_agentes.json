@@ -1,0 +1,56 @@
+[
+  {
+    "amp_name": "BP100",
+    "target": "Pseudomonas syringae",
+    "chemical_basis": {
+      "structure": "Hélice alfa anfifílica",
+      "net_charge": "+6 (Catiónico)",
+      "mechanism_of_action": "Modelo de alfombra (Carpet model); disrupción de membrana mediada por interacciones electrostáticas."
+    },
+    "environmental_conditions": {
+      "optimal_ph": "6.0 - 7.5",
+      "salinity_effect": "Alta sensibilidad a cationes bivalentes (Ca2+, Mg2+). La alta salinidad reduce su eficacia.",
+      "application_method": "Aplicación foliar con coadyuvantes no iónicos."
+    },
+    "agent_explanation_template": {
+      "technical_summary": "El BP100 es un péptido catiónico que se adhiere a la membrana cargada negativamente de P. syringae, causando lisis celular.",
+      "farmer_explanation": "Imagine que la bacteria tiene una coraza con carga negativa y nuestro péptido es un imán con carga positiva muy fuerte. Se pegan tan rápido que rompen la bacteria. Use agua dulce sin muchas sales para que el 'imán' no pierda fuerza."
+    }
+  },
+  {
+    "amp_name": "RsAFP2",
+    "target": "Botrytis cinerea (Pudrición gris)",
+    "chemical_basis": {
+      "structure": "Defensina de planta (Rico en cisteínas, puentes disulfuro)",
+      "net_charge": "+2",
+      "mechanism_of_action": "Interacción específica con glucosilceramidas en la pared fúngica, induciendo apoptosis."
+    },
+    "environmental_conditions": {
+      "optimal_ph": "Amplio rango (4.0 - 8.0)",
+      "temperature_stability": "Alta estabilidad térmica gracias a sus puentes disulfuro.",
+      "application_method": "Spray preventivo pre-cosecha o post-cosecha."
+    },
+    "agent_explanation_template": {
+      "technical_summary": "RsAFP2 ataca específicamente los esfingolípidos del hongo, con alta resistencia a la degradación proteolítica.",
+      "farmer_explanation": "Este péptido es como una llave maestra que solo entra en la cerradura del hongo. Al estar basado en defensas de plantas reales, es súper resistente: no se desarma si hace mucho calor en el invernadero."
+    }
+  },
+  {
+    "amp_name": "Cecropin A",
+    "target": "Pectobacterium carotovorum",
+    "chemical_basis": {
+      "structure": "Hélice alfa lineal",
+      "net_charge": "+7",
+      "mechanism_of_action": "Formación de poros toroidales en la membrana externa de bacterias Gram-negativas."
+    },
+    "environmental_conditions": {
+      "uv_stability": "Sensible a la fotodegradación UV prolongada.",
+      "soil_interaction": "Puede ser adsorbido rápidamente por partículas de arcilla en el suelo.",
+      "application_method": "Aplicación al atardecer; evitar aplicación directa al suelo arcilloso."
+    },
+    "agent_explanation_template": {
+      "technical_summary": "Penetra rápidamente la membrana externa bacteriana formando poros, susceptible a adsorción en arcilla.",
+      "farmer_explanation": "Actúa perforando la 'piel' de la bacteria. Como tiene mucha carga eléctrica, si lo tira a un suelo arcilloso, la tierra lo atrapará. Aplíquelo sobre las hojas al atardecer para que el sol no lo desarme."
+    }
+  }
+]

@@ -1,0 +1,40 @@
+[
+  {
+    "id_caso": "001_TOMATE_BOTRYTIS_CALOR",
+    "cultivo": {
+      "nombre": "Tomate (Solanum lycopersicum)",
+      "condicion_ambiental_critica": "Alta humedad relativa (>85%) combinada con picos de calor extremo.",
+      "respuesta_metabolica_planta": "Bajo estrés por calor, el tomate cierra sus estomas para evitar perder agua. Esto reduce el transporte de calcio hacia los tejidos nuevos. Las paredes celulares se vuelven más delgadas y las fitoalexinas caen."
+    },
+    "patogeno": {
+      "nombre": "Botrytis cinerea (Moho gris)",
+      "oportunidad_infeccion": "Aprovecha la pared celular debilitada por la falta de calcio. Segrega poligalacturonasas que degradan el tejido vegetal."
+    },
+    "solucion_quimica_amp": {
+      "nombre_peptido": "RsAFP2",
+      "secuencia": "QKLCERPSGTWSGVCGNNNACKNQCINLEKARHGSCNYVFPAHKCICYFPC",
+      "carga_neta": "+2",
+      "justificacion_bioquimica": "Se elige RsAFP2 porque es termoestable. Al interactuar con glucosilceramidas del hongo, no daña la pared celular del tomate ya debilitada.",
+      "instruccion_agronomica": "Aplicar vía foliar. Agregar un suplemento de Calcio foliar en la mezcla para ayudar a la planta a reconstruir su pared celular."
+    }
+  },
+  {
+    "id_caso": "002_PAPA_RALSTONIA_SUELO_ACIDO",
+    "cultivo": {
+      "nombre": "Papa (Solanum tuberosum)",
+      "condicion_ambiental_critica": "Suelo muy ácido (pH < 5.5) y estrés hídrico.",
+      "respuesta_metabolica_planta": "En suelos ácidos, aumenta la disponibilidad de aluminio tóxico, dañando los pelos radiculares. La planta altera sus exudados, atrayendo bacterias."
+    },
+    "patogeno": {
+      "nombre": "Ralstonia solanacearum (Marchitez bacteriana)",
+      "oportunidad_infeccion": "Detecta los azúcares exudados (quimiotaxis), entra por las raíces dañadas y coloniza el xilema taponándolo."
+    },
+    "solucion_quimica_amp": {
+      "nombre_peptido": "Esculentin-1a(1-21)NH2",
+      "secuencia": "GIFSKLAGKKIKNLLISGLKG",
+      "carga_neta": "+5",
+      "justificacion_bioquimica": "Carga fuertemente positiva (+5) que se une a los LPS de la membrana de Ralstonia, rompiéndola. Mantiene eficacia en variaciones de pH del suelo ácido.",
+      "instruccion_agronomica": "Aplicación mediante drench (riego directo a la raíz). Aplicar en conjunto con cal agrícola para subir el pH del suelo y reducir la toxicidad por aluminio."
+    }
+  }
+]

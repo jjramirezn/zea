@@ -1,0 +1,20 @@
+{
+  "name": "@agentvault/sdk",
+  "version": "0.1.0",
+  "description": "TypeScript SDK for the AgentVault smart contract",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist"
+  },
+  "peerDependencies": {
+    "ethers": "^6.0.0"
+  },
+  "devDependencies": {
+    "ethers": "^6.13.4",
+    "typescript": "^5.0.0"
+  },
+  "files": ["dist"],
+  "license": "MIT"
+}
