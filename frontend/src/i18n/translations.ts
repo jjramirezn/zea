@@ -50,7 +50,7 @@ export const translations = {
       button: 'Probar en WhatsApp',
     },
     footer: 'Zea — Hackathon Aleph 2026',
-    langSwitch: { label: 'EN', href: '/en' },
+    langSwitch: { label: '🇺🇸 EN', href: '/en', flag: '🇺🇸', code: 'EN' },
   },
   en: {
     lang: 'en',
@@ -103,7 +103,7 @@ export const translations = {
       button: 'Try on WhatsApp',
     },
     footer: 'Zea — Aleph Hackathon 2026',
-    langSwitch: { label: 'ES', href: '/' },
+    langSwitch: { label: '🇦🇷 ES', href: '/', flag: '🇦🇷', code: 'ES' },
   },
 } as const;
 

@@ -27,9 +27,26 @@ const stepImages = [stepPhoto, stepDiag, stepAmp];
       </svg>
       <span class="wordmark">Z<em>ea</em></span>
     </a>
+
+    <button class="nav-toggle" aria-label="Menu" aria-expanded="false">
+      <span class="hamburger"></span>
+    </button>
+
     <div class="nav-right">
       <a href="#how" class="nav-link">{t.nav.howItWorks}</a>
-      <a href={t.langSwitch.href} class="nav-link">{t.langSwitch.label}</a>
+
+      <div class="lang-selector">
+        <button class="lang-current" aria-label="Language">
+          <span class="lang-flag">{t.lang === 'es' ? '🇦🇷' : '🇺🇸'}</span>
+          <span class="lang-code">{t.lang === 'es' ? 'ES' : 'EN'}</span>
+          <svg class="lang-chevron" width="10" height="6" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+        </button>
+        <div class="lang-dropdown">
+          <a href="/" class:list={['lang-option', { active: t.lang === 'es' }]}>🇦🇷 Español</a>
+          <a href="/en" class:list={['lang-option', { active: t.lang === 'en' }]}>🇺🇸 English</a>
+        </div>
+      </div>
+
       <a href={whatsappUrl} class="nav-cta" target="_blank">{t.nav.cta}</a>
     </div>
   </div>
@@ -148,6 +165,42 @@ const stepImages = [stepPhoto, stepDiag, stepAmp];
     font-style: italic;
   }
 
+  .nav-toggle {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    z-index: 101;
+  }
+
+  .hamburger {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: var(--text);
+    position: relative;
+    transition: background 0.2s;
+  }
+
+  .hamburger::before,
+  .hamburger::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    width: 22px;
+    height: 2px;
+    background: var(--text);
+    transition: transform 0.2s;
+  }
+
+  .hamburger::before { top: -7px; }
+  .hamburger::after { top: 7px; }
+
+  .nav-toggle[aria-expanded="true"] .hamburger { background: transparent; }
+  .nav-toggle[aria-expanded="true"] .hamburger::before { transform: rotate(45deg) translate(5px, 5px); }
+  .nav-toggle[aria-expanded="true"] .hamburger::after { transform: rotate(-45deg) translate(5px, -5px); }
+
   .nav-right {
     display: flex;
     align-items: center;
@@ -163,6 +216,75 @@ const stepImages = [stepPhoto, stepDiag, stepAmp];
   }
 
   .nav-link:hover { color: var(--text); }
+
+  /* Language selector */
+  .lang-selector {
+    position: relative;
+  }
+
+  .lang-current {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 10px;
+    cursor: pointer;
+    font-family: var(--font);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    transition: border-color 0.2s;
+  }
+
+  .lang-current:hover { border-color: var(--border-active); }
+
+  .lang-flag { font-size: 16px; line-height: 1; }
+  .lang-code { font-size: 12px; letter-spacing: 0.05em; }
+  .lang-chevron { transition: transform 0.2s; color: var(--text-muted); }
+
+  .lang-selector:hover .lang-chevron,
+  .lang-selector:focus-within .lang-chevron { transform: rotate(180deg); }
+
+  .lang-dropdown {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 4px;
+    min-width: 140px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-4px);
+    transition: all 0.15s ease;
+  }
+
+  .lang-selector:hover .lang-dropdown,
+  .lang-selector:focus-within .lang-dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .lang-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 7px;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    transition: background 0.15s;
+  }
+
+  .lang-option:hover { background: var(--bg-card); }
+  .lang-option.active { background: rgba(168, 216, 0, 0.1); }
 
   .nav-cta {
     background: var(--text);
@@ -449,6 +571,52 @@ const stepImages = [stepPhoto, stepDiag, stepAmp];
 
   /* ── Responsive ── */
   @media (max-width: 768px) {
+    .nav-toggle {
+      display: block;
+    }
+
+    .nav-right {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 260px;
+      background: var(--bg);
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 80px 32px 32px;
+      gap: 20px;
+      border-left: 1px solid var(--border);
+      box-shadow: -8px 0 32px rgba(0,0,0,0.06);
+      transform: translateX(100%);
+      transition: transform 0.25s ease;
+      z-index: 100;
+    }
+
+    .nav-right.open {
+      transform: translateX(0);
+    }
+
+    .nav-cta {
+      width: 100%;
+      text-align: center;
+    }
+
+    .lang-dropdown {
+      position: static;
+      opacity: 1;
+      visibility: visible;
+      transform: none;
+      box-shadow: none;
+      border: 1px solid var(--border);
+      margin-top: 4px;
+    }
+
+    .lang-selector:hover .lang-dropdown,
+    .lang-selector:focus-within .lang-dropdown {
+      transform: none;
+    }
+
     .hero {
       grid-template-columns: 1fr;
       gap: 40px;
@@ -481,3 +649,22 @@ const stepImages = [stepPhoto, stepDiag, stepAmp];
     }
   }
 </style>
+
+<script>
+  const toggle = document.querySelector('.nav-toggle');
+  const navRight = document.querySelector('.nav-right');
+  if (toggle && navRight) {
+    toggle.addEventListener('click', () => {
+      const open = toggle.getAttribute('aria-expanded') === 'true';
+      toggle.setAttribute('aria-expanded', String(!open));
+      navRight.classList.toggle('open');
+    });
+    // Close on link click
+    navRight.querySelectorAll('a').forEach(a => {
+      a.addEventListener('click', () => {
+        toggle.setAttribute('aria-expanded', 'false');
+        navRight.classList.remove('open');
+      });
+    });
+  }
+</script>

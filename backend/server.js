@@ -179,16 +179,26 @@ const server = http.createServer(async (req, res) => {
 
   // Serve Astro static frontend
   if (req.method === 'GET' && !req.url.startsWith('/api/')) {
-    const distDir = '/root/hackathon-amp/frontend/dist';
-    let fp = req.url === '/' ? distDir + '/index.html' : distDir + req.url;
-    try {
-      const data = fs.readFileSync(fp);
-      const ext = fp.split('.').pop();
-      const types = {html:'text/html',css:'text/css',js:'application/javascript',svg:'image/svg+xml',ico:'image/x-icon',png:'image/png',jpg:'image/jpeg',woff2:'font/woff2'};
-      res.writeHead(200, {'Content-Type': types[ext] || 'application/octet-stream'});
-      res.end(data);
-      return;
-    } catch(e) {}
+    const distDir = path.join(path.dirname(new URL(import.meta.url).pathname), '..', 'frontend', 'dist');
+    const urlPath = req.url.split('?')[0];
+    const candidates = [
+      distDir + urlPath,
+      distDir + urlPath + '/index.html',
+      distDir + urlPath + '.html',
+    ];
+    if (urlPath === '/') candidates.unshift(distDir + '/index.html');
+    for (const fp of candidates) {
+      try {
+        const stat = fs.statSync(fp);
+        if (!stat.isFile()) continue;
+        const data = fs.readFileSync(fp);
+        const ext = fp.split('.').pop();
+        const types = {html:'text/html',css:'text/css',js:'application/javascript',svg:'image/svg+xml',ico:'image/x-icon',png:'image/png',jpg:'image/jpeg',webp:'image/webp',woff2:'font/woff2'};
+        res.writeHead(200, {'Content-Type': types[ext] || 'application/octet-stream'});
+        res.end(data);
+        return;
+      } catch(e) { continue; }
+    }
   }
 
   if (req.method === 'GET' && req.url === '/api/health') {
