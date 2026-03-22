@@ -524,63 +524,78 @@ import Layout from '../layouts/Layout.astro';
   }
 
   async function loadTransactions() {
+    const txList = document.getElementById('txList');
+    const USDC_ADDRESS = '0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E';
+    // ERC20 Transfer(address,address,uint256) topic
+    const TRANSFER_TOPIC = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
+    const vaultPadded = '0x' + VAULT_ADDRESS.slice(2).toLowerCase().padStart(64, '0');
+
     try {
-      const res = await fetch(
-        `${SNOWTRACE_API}?module=logs&action=getLogs&address=${VAULT_ADDRESS}&topic0=0x7c232d132aac3fcb36fdd05e7faa11009a85eb91a52e55397768bdce02301c52&fromBlock=0&toBlock=latest&sort=desc&apikey=YourApiKeyToken`
-      );
-      const data = await res.json();
-      const txList = document.getElementById('txList');
+      // Get USDC transfers FROM the vault (payments)
+      const [outRes, inRes] = await Promise.all([
+        fetch(`${SNOWTRACE_API}?module=logs&action=getLogs&address=${USDC_ADDRESS}&topic0=${TRANSFER_TOPIC}&topic1=${vaultPadded}&fromBlock=0&toBlock=latest&sort=desc&apikey=YourApiKeyToken`),
+        fetch(`${SNOWTRACE_API}?module=logs&action=getLogs&address=${USDC_ADDRESS}&topic0=${TRANSFER_TOPIC}&topic2=${vaultPadded}&fromBlock=0&toBlock=latest&sort=desc&apikey=YourApiKeyToken`)
+      ]);
 
-      if (!data.result || data.result.length === 0) {
-        // Fallback: just show regular txs
-        const res2 = await fetch(
-          `${SNOWTRACE_API}?module=account&action=txlist&address=${VAULT_ADDRESS}&startblock=0&endblock=99999999&sort=desc&apikey=YourApiKeyToken`
-        );
-        const data2 = await res2.json();
-        if (!data2.result || data2.result.length === 0) {
-          txList.innerHTML = '<div class="tx-loading">No transactions yet</div>';
-          return;
-        }
+      const outData = await outRes.json();
+      const inData = await inRes.json();
 
-        txList.innerHTML = data2.result.slice(0, 10).map(tx => {
-          const date = new Date(parseInt(tx.timeStamp) * 1000);
-          const timeStr = date.toLocaleString();
-          const isPayment = tx.input && tx.input.length > 10;
-          return `
-            <div class="tx-row">
-              <div class="tx-left">
-                <span class="tx-reason">${isPayment ? '🧬 Diagnosis payment' : '💰 Deposit'}</span>
-                <span class="tx-time">${timeStr}</span>
-              </div>
-              <div class="tx-right">
-                <span class="tx-amount">${isPayment ? '-$0.05' : 'deposit'}</span>
-                <a class="tx-link" href="https://snowtrace.io/tx/${tx.hash}" target="_blank">Snowtrace ↗</a>
-              </div>
-            </div>
-          `;
-        }).join('');
+      const transfers = [];
+
+      // Outgoing = payments
+      if (outData.result && outData.result.length > 0) {
+        outData.result.forEach(log => {
+          const amount = parseInt(log.data, 16) / 1e6;
+          transfers.push({
+            type: 'payment',
+            amount,
+            timestamp: parseInt(log.timeStamp, 16) * 1000,
+            hash: log.transactionHash
+          });
+        });
+      }
+
+      // Incoming = deposits
+      if (inData.result && inData.result.length > 0) {
+        inData.result.forEach(log => {
+          const amount = parseInt(log.data, 16) / 1e6;
+          transfers.push({
+            type: 'deposit',
+            amount,
+            timestamp: parseInt(log.timeStamp, 16) * 1000,
+            hash: log.transactionHash
+          });
+        });
+      }
+
+      if (transfers.length === 0) {
+        txList.innerHTML = '<div class="tx-loading">No USDC transactions yet</div>';
         return;
       }
 
-      txList.innerHTML = data.result.slice(0, 10).map(log => {
-        const date = new Date(parseInt(log.timeStamp, 16) * 1000);
+      // Sort by time descending
+      transfers.sort((a, b) => b.timestamp - a.timestamp);
+
+      txList.innerHTML = transfers.slice(0, 10).map(tx => {
+        const date = new Date(tx.timestamp);
         const timeStr = date.toLocaleString();
+        const isPayment = tx.type === 'payment';
         return `
           <div class="tx-row">
             <div class="tx-left">
-              <span class="tx-reason">🧬 Diagnosis payment</span>
+              <span class="tx-reason">${isPayment ? '🧬 Diagnosis payment' : '💰 Deposit'}</span>
               <span class="tx-time">${timeStr}</span>
             </div>
             <div class="tx-right">
-              <span class="tx-amount">-$0.05</span>
-              <a class="tx-link" href="https://snowtrace.io/tx/${log.transactionHash}" target="_blank">Snowtrace ↗</a>
+              <span class="tx-amount" style="color: ${isPayment ? '#E84142' : '#5A8800'}">${isPayment ? '-' : '+'}$${tx.amount.toFixed(2)}</span>
+              <a class="tx-link" href="https://snowtrace.io/tx/${tx.hash}" target="_blank">Snowtrace ↗</a>
             </div>
           </div>
         `;
       }).join('');
     } catch (e) {
       console.error('Failed to load txs:', e);
-      document.getElementById('txList').innerHTML = '<div class="tx-loading">Failed to load transactions</div>';
+      txList.innerHTML = '<div class="tx-loading">Failed to load transactions</div>';
     }
   }
 
