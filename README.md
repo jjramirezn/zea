@@ -190,113 +190,113 @@ MIT
 
 ---
 
-# Zea -- Espanol
+# Zea -- Español
 
-**Diagnostico de cultivos + recomendacion de peptidos antimicrobianos via WhatsApp.**
+**Diagnóstico de cultivos + recomendación de péptidos antimicrobianos vía WhatsApp.**
 
-Manda una foto de tu planta enferma por WhatsApp. Zea identifica el patogeno y te recomienda el peptido antimicrobiano (AMP) exacto para combatirlo.
+Mandá una foto de tu planta enferma por WhatsApp. Zea identifica el patógeno y te recomienda el péptido antimicrobiano (AMP) exacto para combatirlo.
 
 > **Probalo ahora:** [+54 9 11 2261-1627](https://wa.me/5491122611627?text=Hola%2C%20quiero%20diagnosticar%20mi%20cultivo) | [Web](https://getzea.com)
 
 ---
 
-## Por que Zea?
+## ¿Por qué Zea?
 
-Argentina gasta **USD 3.100M/anio** en agroquimicos. Los patogenos desarrollan resistencia, los residuos contaminan, y el asesoramiento bioinformatico no existe a escala. Los peptidos antimicrobianos (AMPs) atacan la membrana fisica del patogeno -- mas dificil de esquivar evolutivamente, biodegradables y sintetizables localmente.
+Argentina gasta **USD 3.100M/año** en agroquímicos. Los patógenos desarrollan resistencia, los residuos contaminan, y el asesoramiento bioinformático no existe a escala. Los péptidos antimicrobianos (AMPs) atacan la membrana física del patógeno -- más difícil de esquivar evolutivamente, biodegradables y sintetizables localmente.
 
 **El problema:** la ciencia de AMPs existe en papers y bases de datos. No llega al campo.
 
-**Zea lo resuelve:** un agente de WhatsApp que cualquier agricultor puede usar. Sin app, sin cuenta, sin friccion.
+**Zea lo resuelve:** un agente de WhatsApp que cualquier agricultor puede usar. Sin app, sin cuenta, sin fricción.
 
 ---
 
-## Como funciona
+## Cómo funciona
 
-Zea usa un **Pipeline Hibrido** donde la IA solo maneja lenguaje (entrada/salida) y todas las decisiones criticas son codigo deterministico. La IA no puede inventar un peptido, saltear una alerta de bioseguridad, ni recomendar un tratamiento que no exista en la base de datos curada.
+Zea usa un **Pipeline Híbrido** donde la IA solo maneja lenguaje (entrada/salida) y todas las decisiones críticas son código determinístico. La IA no puede inventar un péptido, saltear una alerta de bioseguridad, ni recomendar un tratamiento que no exista en la base de datos curada.
 
 ```
 Foto de planta enferma (WhatsApp)
          |
          v
 +------------------------------------+
-|  FASE 1 -- DIAGNOSTICO (IA)       |
-|  Vision AI analiza sintomas        |
+|  FASE 1 -- DIAGNÓSTICO (IA)       |
+|  Vision AI analiza síntomas        |
 |  Output: JSON estructurado         |
 |  Vocabulario cerrado: solo puede   |
-|  identificar patogenos de nuestra  |
+|  identificar patógenos de nuestra  |
 |  base de datos verificada          |
 +------------------------------------+
-|  FASE 2 -- SELECCION AMP (codigo) |
-|  Lookup deterministico en DB       |
+|  FASE 2 -- SELECCIÓN AMP (código) |
+|  Lookup determinístico en DB       |
 |  Sin IA. String match exacto.      |
-|  Imposible alucinar un peptido.    |
+|  Imposible alucinar un péptido.    |
 +------------------------------------+
-|  FASE 3 -- BIOSEGURIDAD (codigo)  |
+|  FASE 3 -- BIOSEGURIDAD (código)  |
 |  Chequeo de alertas rojas          |
 |  Aflatoxinas, cuarentenas, mezclas |
 |  prohibidas -> BLOQUEA tratamiento |
 +------------------------------------+
 |  FASE 4 -- RESPUESTA (IA)         |
 |  Toma datos verificados y redacta  |
-|  explicacion clara para el         |
+|  explicación clara para el         |
 |  agricultor. No puede cambiar      |
 |  los datos del pipeline.           |
 +------------------------------------+
          |
          v
-Recomendacion por WhatsApp
+Recomendación por WhatsApp
 ```
 
 ---
 
-## Como evitamos falsos positivos
+## Cómo evitamos falsos positivos
 
-El mayor riesgo de un agente de IA en agricultura es recomendar el tratamiento equivocado. Zea aborda esto con un pipeline hibrido donde la IA nunca toma decisiones criticas:
+El mayor riesgo de un agente de IA en agricultura es recomendar el tratamiento equivocado. Zea aborda esto con un pipeline híbrido donde la IA nunca toma decisiones críticas:
 
-### 1. Vocabulario cerrado (anti-alucinacion)
-La IA de diagnostico solo puede identificar patogenos que existen en nuestra base de datos curada. No puede inventar nombres ni matches. Si el patogeno no esta en la DB, dice "no tengo recomendacion" -- nunca adivina.
+### 1. Vocabulario cerrado (anti-alucinación)
+La IA de diagnóstico solo puede identificar patógenos que existen en nuestra base de datos curada. No puede inventar nombres ni matches. Si el patógeno no está en la DB, dice "no tengo recomendación" -- nunca adivina.
 
-### 2. Seleccion deterministica (sin IA)
-La seleccion del peptido es codigo puro -- un string match exacto contra la DB. No hay modelo de lenguaje involucrado. Si la DB dice que Botrytis -> RsAFP2, eso es lo que devuelve. Siempre.
+### 2. Selección determinística (sin IA)
+La selección del péptido es código puro -- un string match exacto contra la DB. No hay modelo de lenguaje involucrado. Si la DB dice que Botrytis -> RsAFP2, eso es lo que devuelve. Siempre.
 
-### 3. Niveles de confianza explicitos
-Cada diagnostico incluye un nivel de confianza (alto/medio/bajo) basado en criterios definidos:
-- **Alto:** sintomas de manual para ese patogeno en ese cultivo
-- **Medio:** sintomas consistentes pero podrian ser otro patogeno
-- **Bajo:** incierto, se pide mas informacion o se recomienda consultar un agronomo
+### 3. Niveles de confianza explícitos
+Cada diagnóstico incluye un nivel de confianza (alto/medio/bajo) basado en criterios definidos:
+- **Alto:** síntomas de manual para ese patógeno en ese cultivo
+- **Medio:** síntomas consistentes pero podrían ser otro patógeno
+- **Bajo:** incierto, se pide más información o se recomienda consultar un agrónomo
 
-### 4. Bioseguridad como guardarrail
-Antes de cualquier recomendacion, el sistema chequea alertas de bioseguridad:
-- **Alerta roja** (aflatoxinas, ergotismo): bloquea tratamiento, indica destruccion del lote
+### 4. Bioseguridad como guardarraíl
+Antes de cualquier recomendación, el sistema chequea alertas de bioseguridad:
+- **Alerta roja** (aflatoxinas, ergotismo): bloquea tratamiento, indica destrucción del lote
 - **Cuarentena** (HLB, Xylella): no recomienda AMPs, deriva a autoridades fitosanitarias
-- **Bloqueo etico**: rechaza peptidos analogos a antibioticos de ultimo recurso humano
-- **Interacciones quimicas**: advierte sobre mezclas peligrosas (cobre, tensioactivos)
+- **Bloqueo ético**: rechaza péptidos análogos a antibióticos de último recurso humano
+- **Interacciones químicas**: advierte sobre mezclas peligrosas (cobre, tensioactivos)
 
 ### 5. Fuentes citadas
-Cada recomendacion incluye la fuente de la base de datos (APD3, DRAMP, DBAASP) y la concentracion inhibitoria minima (MIC) medida en estudios publicados. El usuario puede verificar.
+Cada recomendación incluye la fuente de la base de datos (APD3, DRAMP, DBAASP) y la concentración inhibitoria mínima (MIC) medida en estudios publicados. El usuario puede verificar.
 
 ### 6. El usuario conoce su cultivo
-Si el agricultor dice "es tomate", el sistema le cree -- no intenta sobreescribir con identificacion visual. Reduce errores de clasificacion de cultivo.
+Si el agricultor dice "es tomate", el sistema le cree -- no intenta sobreescribir con identificación visual. Reduce errores de clasificación de cultivo.
 
 ### 7. Disclaimer obligatorio
-Toda recomendacion termina con: *"Basado en estudios in vitro. Validar en campo antes de aplicar a escala."*
+Toda recomendación termina con: *"Basado en estudios in vitro. Validar en campo antes de aplicar a escala."*
 
 ---
 
 ## Datos curados
 
-| Archivo | Proposito |
+| Archivo | Propósito |
 |---------|-----------|
-| `agent/data/matcher_patogenos.json` | Patogeno -> AMP con secuencia, MIC y fuente |
-| `agent/data/cerebro_ambiental.json` | Contexto ambiental: estres de planta x patogeno x solucion |
-| `agent/data/traductor_agentes.json` | Quimica del AMP explicada para tecnicos y agricultores |
-| `agent/data/biosecurity-alerts.json` | Guardarrailes: toxicidad, cuarentenas, mezclas prohibidas |
+| `agent/data/matcher_patogenos.json` | Patógeno -> AMP con secuencia, MIC y fuente |
+| `agent/data/cerebro_ambiental.json` | Contexto ambiental: estrés de planta x patógeno x solución |
+| `agent/data/traductor_agentes.json` | Química del AMP explicada para técnicos y agricultores |
+| `agent/data/biosecurity-alerts.json` | Guardarraíles: toxicidad, cuarentenas, mezclas prohibidas |
 
 ---
 
 ## Pagos (x402)
 
-Cada usuario tiene **10 diagnosticos gratuitos por hora**. Despues del limite, la API retorna HTTP 402 con headers del protocolo x402:
+Cada usuario tiene **10 diagnósticos gratuitos por hora**. Después del límite, la API retorna HTTP 402 con headers del protocolo x402:
 
 ```
 HTTP/1.1 402 Payment Required
@@ -305,9 +305,9 @@ X-Payment-Currency: USDC
 X-Payment-Required: true
 ```
 
-El agricultor paga $0.50 USDC por diagnostico. Es el mismo protocolo que el agente usa para pagar su propio computo. La integracion de pagos esta diseñada para conectarse con cualquier wallet compatible con x402.
+El agricultor paga $0.50 USDC por diagnóstico. Es el mismo protocolo que el agente usa para pagar su propio cómputo. La integración de pagos está diseñada para conectarse con cualquier wallet compatible con x402.
 
-Para demos, el rate limit se puede bypassear con un token via el header `X-Demo-Token`.
+Para demos, el rate limit se puede bypassear con un token vía el header `X-Demo-Token`.
 
 ---
 
