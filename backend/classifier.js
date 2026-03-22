@@ -134,20 +134,22 @@ function preprocessImage(imageBuffer) {
   const tmpOut = `/tmp/zea-cls-${Date.now()}-out.rgb`;
   try {
     fs.writeFileSync(tmpIn, imageBuffer);
-    // Convert to 224x224 raw RGB (ignore aspect ratio for model input)
-    execSync(`convert "${tmpIn}" -resize 224x224! -depth 8 "rgb:${tmpOut}"`, { timeout: 5000 });
+    // HuggingFace MobileNetV2 preprocessing:
+    // 1. Resize shortest edge to 256 (keep aspect ratio)
+    // 2. Center-crop to 224x224
+    // 3. Normalize: (pixel/255 - 0.5) / 0.5 → maps [0,255] to [-1,1]
+    execSync(`convert "${tmpIn}" -resize "256x256^" -gravity center -crop 224x224+0+0 +repage -depth 8 "rgb:${tmpOut}"`, { timeout: 5000 });
     const raw = fs.readFileSync(tmpOut);
     fs.unlinkSync(tmpIn);
     fs.unlinkSync(tmpOut);
 
-    // MobileNetV2 expects pixel values in [0, 1] range (HuggingFace default for this model)
     const pixels = 224 * 224;
     const float32 = new Float32Array(3 * pixels);
-    // CHW format: channel-first
+    // CHW format, normalized to [-1, 1]
     for (let i = 0; i < pixels; i++) {
-      float32[i] = raw[i * 3] / 255.0;              // R
-      float32[pixels + i] = raw[i * 3 + 1] / 255.0; // G
-      float32[2 * pixels + i] = raw[i * 3 + 2] / 255.0; // B
+      float32[i] = (raw[i * 3] / 255.0 - 0.5) / 0.5;              // R
+      float32[pixels + i] = (raw[i * 3 + 1] / 255.0 - 0.5) / 0.5; // G
+      float32[2 * pixels + i] = (raw[i * 3 + 2] / 255.0 - 0.5) / 0.5; // B
     }
     return float32;
   } catch (e) {
