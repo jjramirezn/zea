@@ -29,7 +29,8 @@ const stepImages = [stepPhoto, stepDiag, stepAmp];
     </a>
 
     <button class="nav-toggle" aria-label="Menu" aria-expanded="false">
-      <span class="hamburger"></span>
+      <svg class="icon-menu" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
+      <svg class="icon-close" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
     </button>
 
     <div class="nav-right">
@@ -172,34 +173,12 @@ const stepImages = [stepPhoto, stepDiag, stepAmp];
     cursor: pointer;
     padding: 8px;
     z-index: 101;
+    color: var(--text);
   }
 
-  .hamburger {
-    display: block;
-    width: 22px;
-    height: 2px;
-    background: var(--text);
-    position: relative;
-    transition: background 0.2s;
-  }
-
-  .hamburger::before,
-  .hamburger::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    width: 22px;
-    height: 2px;
-    background: var(--text);
-    transition: transform 0.2s;
-  }
-
-  .hamburger::before { top: -7px; }
-  .hamburger::after { top: 7px; }
-
-  .nav-toggle[aria-expanded="true"] .hamburger { background: transparent; }
-  .nav-toggle[aria-expanded="true"] .hamburger::before { transform: rotate(45deg) translate(5px, 5px); }
-  .nav-toggle[aria-expanded="true"] .hamburger::after { transform: rotate(-45deg) translate(5px, -5px); }
+  .icon-close { display: none; }
+  .nav-toggle[aria-expanded="true"] .icon-menu { display: none; }
+  .nav-toggle[aria-expanded="true"] .icon-close { display: block; }
 
   .nav-right {
     display: flex;
@@ -580,14 +559,14 @@ const stepImages = [stepPhoto, stepDiag, stepAmp];
       top: 0;
       right: 0;
       bottom: 0;
-      width: 260px;
+      width: 280px;
       background: var(--bg);
       flex-direction: column;
-      align-items: flex-start;
-      padding: 80px 32px 32px;
-      gap: 20px;
+      align-items: stretch;
+      padding: 80px 28px 32px;
+      gap: 8px;
       border-left: 1px solid var(--border);
-      box-shadow: -8px 0 32px rgba(0,0,0,0.06);
+      box-shadow: -8px 0 32px rgba(0,0,0,0.1);
       transform: translateX(100%);
       transition: transform 0.25s ease;
       z-index: 100;
@@ -597,10 +576,22 @@ const stepImages = [stepPhoto, stepDiag, stepAmp];
       transform: translateX(0);
     }
 
+    .nav-link {
+      padding: 12px 0;
+      font-size: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
     .nav-cta {
       width: 100%;
       text-align: center;
+      margin-top: 12px;
     }
+
+    /* On mobile, language selector is simple links, no hover dropdown */
+    .lang-selector { width: 100%; }
+
+    .lang-current { display: none; }
 
     .lang-dropdown {
       position: static;
@@ -608,8 +599,19 @@ const stepImages = [stepPhoto, stepDiag, stepAmp];
       visibility: visible;
       transform: none;
       box-shadow: none;
+      border: none;
+      padding: 0;
+      min-width: auto;
+      display: flex;
+      gap: 8px;
+    }
+
+    .lang-option {
+      flex: 1;
+      justify-content: center;
       border: 1px solid var(--border);
-      margin-top: 4px;
+      border-radius: 8px;
+      padding: 10px;
     }
 
     .lang-selector:hover .lang-dropdown,
