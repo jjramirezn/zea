@@ -70,7 +70,7 @@ ${JSON.stringify(pipelineResult, null, 2)}
 
 CRITICAL RULES:
 - The diagnosis above is FINAL. Do NOT re-interpret or override it.
-- If amp_matches is empty, say "No tenemos un peptido validado para este patogeno en nuestra base de datos actual."
+- If amp_matches is empty, say "No tenemos un péptido validado para este patógeno en nuestra base de datos actual."
 - Do NOT recommend AMPs for pathogens that are not in amp_matches.
 - Present the TOP candidate from the diagnosis as-is, even if it has no AMP match.
 - The crop field in the diagnosis is already identified. Use it directly.
