@@ -29,6 +29,15 @@ Photo of sick plant (WhatsApp)
          |
          v
 +------------------------------------+
+|  PHASE 0 -- LOCAL ML (MobileNet)  |
+|  MobileNetV2 classifies image     |
+|  ~300ms, runs on-device, free     |
+|  If confidence >= 80%: use result  |
+|  If uncertain: fall back to AI     |
++------------------------------------+
+         |  (>80%: skip to Phase 2)
+         v  (<80%: continue)
++------------------------------------+
 |  PHASE 1 -- DIAGNOSIS (AI)        |
 |  Vision AI analyzes symptoms       |
 |  Output: structured JSON           |
@@ -178,11 +187,30 @@ For demos, the rate limit can be bypassed with a token via the `X-Demo-Token` he
 
 ---
 
+## Hybrid ML + AI diagnosis
+
+Zea uses a **two-tier classification** system for speed and accuracy:
+
+| | MobileNetV2 (local) | Claude Vision (API) |
+|---|---|---|
+| **Speed** | ~300ms | ~5-15 seconds |
+| **Cost** | $0.00 | ~$0.01-0.03/image |
+| **Coverage** | 38 PlantVillage classes (14 crops) | Any plant, any disease |
+| **Accuracy** | 95.4% on PlantVillage dataset | High on real-world messy photos |
+| **Hallucination** | Impossible — fixed class output | Constrained by closed vocabulary |
+
+**Flow:** MobileNetV2 runs first (~300ms). If confidence ≥ 80%, use it (free, instant). If uncertain, fall back to Claude Vision (slower, but handles edge cases).
+
+The model is 8.8MB (2.27M parameters), runs on a single vCPU with no GPU. Inference via ONNX Runtime.
+
+---
+
 ## Stack
 
 - **WhatsApp:** Primary channel -- no app, no onboarding, no friction
 - **OpenClaw:** Agent runtime (session management, WhatsApp, tools)
-- **Claude Sonnet 4:** Vision AI for diagnosis (Phase 1)
+- **MobileNetV2:** Local plant disease classification (Phase 0, 38 classes, ONNX Runtime)
+- **Claude Sonnet 4:** Vision AI fallback for diagnosis (Phase 1)
 - **Claude Haiku 4.5:** Fast translation for farmer-friendly output (Phase 4)
 - **Deterministic pipeline:** Pure Node.js for AMP selection and biosecurity
 - **Astro:** Static landing page (zero JS shipped to browser)
@@ -197,10 +225,14 @@ For demos, the rate limit can be bypassed with a token via the `X-Demo-Token` he
 zea/
   backend/
     server.js          # HTTP API, rate limiting, orchestration
+    classifier.js      # MobileNetV2 local classifier (ONNX Runtime)
     prompts.js         # AI prompts (Phase 1 diagnosis, Phase 4 translation)
     pipeline.js        # Deterministic functions (AMP lookup, biosecurity)
     claude.js          # Anthropic API wrapper
+    vault.js           # AgentVault client (Avalanche on-chain payments)
     logger.js          # File logger (/tmp/zea/zea-YYYY-MM-DD.log)
+    models/
+      plant_disease_model.onnx  # MobileNetV2 PlantVillage (8.8MB, 38 classes)
   frontend/
     src/
       components/      # Landing.astro (reusable, i18n-ready)
@@ -283,6 +315,15 @@ Zea usa un **Pipeline Híbrido** donde la IA solo maneja lenguaje (entrada/salid
 Foto de planta enferma (WhatsApp)
          |
          v
++------------------------------------+
+|  FASE 0 -- ML LOCAL (MobileNet)   |
+|  MobileNetV2 clasifica la imagen  |
+|  ~300ms, corre local, gratis      |
+|  Si confianza >= 80%: usa el      |
+|  resultado. Si no: pasa a la IA   |
++------------------------------------+
+         |  (>80%: salta a Fase 2)
+         v  (<80%: continúa)
 +------------------------------------+
 |  FASE 1 -- DIAGNÓSTICO (IA)       |
 |  Vision AI analiza síntomas        |
