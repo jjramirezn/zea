@@ -8,6 +8,11 @@
 
 Send a photo of your sick plant via WhatsApp. Zea identifies the pathogen and recommends the exact antimicrobial peptide (AMP) to fight it.
 
+## Demo
+
+<video src="https://github.com/jjramirezn/zea/raw/main/docs/demo-whatsapp.mp4" controls width="600"></video>
+
+> 📱 Real WhatsApp conversation: photo → diagnosis → AMP recommendation → on-chain payment
 > **Try it now:** [+54 9 11 2261-1627](https://wa.me/5491122611627?text=Hi%2C%20I%20want%20to%20diagnose%20my%20crop) | [Web](https://getzea.com) | [Vault Dashboard](https://getzea.com/vault)
 
 [Leer en espanol](#zea----espanol)
@@ -296,6 +301,12 @@ MIT
 **Diagnóstico de cultivos + recomendación de péptidos antimicrobianos vía WhatsApp.**
 
 Mandá una foto de tu planta enferma por WhatsApp. Zea identifica el patógeno y te recomienda el péptido antimicrobiano (AMP) exacto para combatirlo.
+
+## Demo
+
+<video src="https://github.com/jjramirezn/zea/raw/main/docs/demo-whatsapp.mp4" controls width="600"></video>
+
+> 📱 Conversación real de WhatsApp: foto → diagnóstico → recomendación AMP → pago on-chain
 
 > **Probalo ahora:** [+54 9 11 2261-1627](https://wa.me/5491122611627?text=Hola%2C%20quiero%20diagnosticar%20mi%20cultivo) | [Web](https://getzea.com) | [Vault Dashboard](https://getzea.com/vault)
 
