@@ -1,5 +1,6 @@
 ---
 import { Image } from 'astro:assets';
+import DemoChat from "./DemoChat.astro";
 import type { translations } from '../i18n/translations';
 import heroImg from '../assets/steven-weeks-DUPFowqI6oI-unsplash.jpg';
 import stepPhoto from '../assets/dan-meyers-IQVFVH0ajag-unsplash.jpg';
@@ -42,7 +43,7 @@ const stepImages = [stepPhoto, stepDiag, stepAmp];
         </div>
       </div>
 
-      <a href={whatsappUrl} class="nav-cta" target="_blank">{t.nav.cta}</a>
+      <a href="#demo" class="nav-cta">{t.nav.cta}</a>
     </div>
   </div>
 </nav>
@@ -57,7 +58,7 @@ const stepImages = [stepPhoto, stepDiag, stepAmp];
     </h1>
     <p class="hero-sub">{t.hero.sub}</p>
     <div class="hero-actions">
-      <a href={whatsappUrl} class="btn-primary" target="_blank">{t.hero.cta}</a>
+      <a href="#demo" class="btn-primary">{t.hero.cta}</a>
       <a href="#how" class="btn-ghost">{t.hero.secondary}</a>
     </div>
   </div>
@@ -98,12 +99,15 @@ const stepImages = [stepPhoto, stepDiag, stepAmp];
   </div>
 </section>
 
+<DemoChat lang={t.lang} />
+
+
 <!-- CTA -->
 <section class="cta-section">
   <div class="cta-card">
     <span class="wordmark cta-wordmark">Z<em>ea</em></span>
     <p class="cta-tagline">{t.cta.tagline}</p>
-    <a href={whatsappUrl} class="btn-primary btn-cta" target="_blank">{t.cta.button}</a>
+    <a href="#demo" class="btn-primary btn-cta">{t.cta.button}</a>
   </div>
 </section>
 
