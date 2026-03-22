@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import http from 'http';
+import { execSync } from 'child_process';
 
 import { PHASE1_PROMPT, PHASE1_TEXT_PROMPT, PHASE4_SYSTEM } from './prompts.js';
 import { deterministicPipeline } from './pipeline.js';
@@ -260,12 +261,24 @@ const server = http.createServer(async (req, res) => {
       let hasImage = false;
       if (image) {
         hasImage = true;
-        const b64 = image.data.toString('base64');
-        const ext = image.filename.split('.').pop().toLowerCase();
-        const mimeMap = { jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', gif: 'image/gif', webp: 'image/webp' };
+        // Resize image to max 1024px wide to reduce memory + API latency
+        let imgBuffer = image.data;
+        try {
+          const tmpIn = `/tmp/zea-img-${Date.now()}-in`;
+          const tmpOut = `/tmp/zea-img-${Date.now()}-out.jpg`;
+          fs.writeFileSync(tmpIn, imgBuffer);
+          execSync(`convert "${tmpIn}" -resize "1024x1024>" -quality 80 "${tmpOut}"`, { timeout: 5000 });
+          imgBuffer = fs.readFileSync(tmpOut);
+          fs.unlinkSync(tmpIn);
+          fs.unlinkSync(tmpOut);
+          log.info('IMAGE', `Resized: ${image.data.length} -> ${imgBuffer.length} bytes`);
+        } catch (e) {
+          log.warn('IMAGE', `Resize failed, using original: ${e.message}`);
+        }
+        const b64 = imgBuffer.toString('base64');
         content.push({
           type: 'image',
-          source: { type: 'base64', media_type: mimeMap[ext] || 'image/jpeg', data: b64 }
+          source: { type: 'base64', media_type: 'image/jpeg', data: b64 }
         });
       }
       content.push({ type: 'text', text: text || 'Analyze this plant image and diagnose any disease.' });
@@ -278,6 +291,11 @@ const server = http.createServer(async (req, res) => {
       while (history.length > 20) history.shift();
 
       const reply = await handleChat(history, hasImage);
+
+      // Store only text in history — don't keep base64 images in memory
+      const textOnlyContent = content.filter(p => p.type !== 'image');
+      if (hasImage) textOnlyContent.unshift({ type: 'text', text: '[user sent a plant photo]' });
+      history[history.length - 1] = { role: 'user', content: textOnlyContent };
       history.push({ role: 'assistant', content: reply });
 
       // On-chain payment for successful diagnosis (fire-and-forget, don't block response)
