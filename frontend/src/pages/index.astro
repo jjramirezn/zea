@@ -82,33 +82,33 @@ const whatsappUrl = 'https://wa.me/5491122611627?text=Hola%2C%20quiero%20diagnos
     <h2 class="section-title">Tres pasos. Un diagnostico.</h2>
     <div class="steps">
       <div class="step">
-        <div class="step-image">
-          <Image src={stepPhoto} alt="Foto de planta" width={400} quality={75} />
-        </div>
         <div class="step-body">
           <span class="step-number">01</span>
           <h3>Fotografia</h3>
           <p>Sacale una foto a la planta afectada y enviala por WhatsApp. El agente usa vision artificial para identificar signos de enfermedad.</p>
         </div>
-      </div>
-      <div class="step">
         <div class="step-image">
-          <Image src={stepDiag} alt="Diagnostico de planta" width={400} quality={75} />
+          <Image src={stepPhoto} alt="Foto de planta" width={560} quality={80} />
         </div>
+      </div>
+      <div class="step step-reverse">
         <div class="step-body">
           <span class="step-number">02</span>
           <h3>Diagnostico</h3>
           <p>El modelo identifica el patogeno y lo cruza con nuestra base de datos curada de peptidos antimicrobianos con eficacia comprobada.</p>
         </div>
+        <div class="step-image">
+          <Image src={stepDiag} alt="Diagnostico de planta" width={560} quality={80} />
+        </div>
       </div>
       <div class="step">
-        <div class="step-image">
-          <Image src={stepAmp} alt="Recomendacion de peptido" width={400} quality={75} />
-        </div>
         <div class="step-body">
           <span class="step-number">03</span>
           <h3>Recomendacion</h3>
           <p>Recibis el peptido especifico, concentracion, metodo de aplicacion y referencias cientificas. Todo verificado, sin alucinaciones.</p>
+        </div>
+        <div class="step-image">
+          <Image src={stepAmp} alt="Recomendacion de peptido" width={560} quality={80} />
         </div>
       </div>
     </div>
@@ -372,32 +372,33 @@ const whatsappUrl = 'https://wa.me/5491122611627?text=Hola%2C%20quiero%20diagnos
   .steps {
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 80px;
   }
 
   .step {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    overflow: hidden;
     display: grid;
-    grid-template-columns: 280px 1fr;
-    transition: border-color 0.3s;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
   }
 
-  .step:hover {
-    border-color: var(--border-active);
+  .step-reverse .step-image {
+    order: -1;
+  }
+
+  .step-image {
+    border-radius: var(--radius);
+    overflow: hidden;
   }
 
   .step-image :global(img) {
     width: 100%;
-    height: 100%;
+    height: 340px;
     object-fit: cover;
     display: block;
   }
 
   .step-body {
-    padding: 36px 32px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -405,23 +406,25 @@ const whatsappUrl = 'https://wa.me/5491122611627?text=Hola%2C%20quiero%20diagnos
 
   .step-number {
     font-family: var(--mono);
-    font-size: 12px;
-    color: var(--text-muted);
-    margin-bottom: 12px;
+    font-size: 48px;
+    font-weight: 500;
+    color: rgba(168, 216, 0, 0.2);
+    line-height: 1;
+    margin-bottom: 16px;
   }
 
   .step h3 {
     font-family: var(--font-display);
-    font-size: 24px;
+    font-size: 28px;
     font-weight: 600;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
     color: var(--text);
   }
 
   .step p {
-    font-size: 15px;
+    font-size: 16px;
     color: var(--text-muted);
-    line-height: 1.6;
+    line-height: 1.7;
   }
 
   /* ── CTA ── */
@@ -493,10 +496,15 @@ const whatsappUrl = 'https://wa.me/5491122611627?text=Hola%2C%20quiero%20diagnos
 
     .step {
       grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+    .step-reverse .step-image {
+      order: 0;
     }
 
     .step-image :global(img) {
-      height: 200px;
+      height: 220px;
     }
 
     .cta-card {
