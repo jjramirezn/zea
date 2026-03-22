@@ -6,6 +6,7 @@ import { PHASE1_PROMPT, PHASE1_TEXT_PROMPT, PHASE4_SYSTEM } from './prompts.js';
 import { deterministicPipeline } from './pipeline.js';
 import { callClaude, MODELS } from './claude.js';
 import { log } from './logger.js';
+import { init as initVault, payForDiagnosis, getVaultStatus, VAULT_ADDRESS } from './vault.js';
 
 const PORT = process.env.PORT || 3000;
 
@@ -201,6 +202,13 @@ const server = http.createServer(async (req, res) => {
     }
   }
 
+  if (req.method === 'GET' && req.url === '/api/vault') {
+    const status = await getVaultStatus();
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(status));
+    return;
+  }
+
   if (req.method === 'GET' && req.url === '/api/health') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({
@@ -227,20 +235,24 @@ const server = http.createServer(async (req, res) => {
           res.writeHead(402, {
             'Content-Type': 'application/json',
             'X-Payment-Required': 'true',
-            'X-Payment-Amount': '0.50',
+            'X-Payment-Amount': '0.05',
             'X-Payment-Currency': 'USDC',
+            'X-Payment-Network': 'avalanche',
+            'X-Payment-Vault': VAULT_ADDRESS,
             'X-RateLimit-Limit': String(RATE_LIMIT),
             'X-RateLimit-Remaining': '0',
             'X-RateLimit-Reset': String(limit.resetAt)
           });
           res.end(JSON.stringify({
             error: 'rate_limit_exceeded',
-            message: 'Has alcanzado el límite de diagnósticos gratuitos. Para continuar, realizá un pago de $0.50 USDC por diagnóstico.',
+            message: 'Has alcanzado el límite de diagnósticos gratuitos. Para continuar, realizá un pago de $0.05 USDC por diagnóstico.',
             payment: {
-              amount: '0.50',
+              amount: '0.05',
               currency: 'USDC',
+              network: 'avalanche',
               protocol: 'x402',
-              recipient: '0x0000000000000000000000000000000000000000'
+              vault: VAULT_ADDRESS,
+              snowtrace: `https://snowtrace.io/address/${VAULT_ADDRESS}`
             },
             resetAt: new Date(limit.resetAt).toISOString()
           }));
@@ -272,6 +284,18 @@ const server = http.createServer(async (req, res) => {
       const reply = await handleChat(history, hasImage);
       history.push({ role: 'assistant', content: reply });
 
+      // On-chain payment for successful diagnosis (fire-and-forget, don't block response)
+      if (hasImage) {
+        const reason = `diagnosis:${sessionId}:${Date.now()}`;
+        payForDiagnosis(reason).then(result => {
+          if (result.success) {
+            log.info('VAULT', `Payment: ${result.txHash}`);
+          } else {
+            log.warn('VAULT', `Payment skipped: ${result.error}`);
+          }
+        }).catch(err => log.error('VAULT', err.message));
+      }
+
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ reply }));
     } catch (err) {
@@ -286,6 +310,7 @@ const server = http.createServer(async (req, res) => {
   res.end('Not found');
 });
 
-server.listen(PORT, '0.0.0.0', () => {
+server.listen(PORT, '0.0.0.0', async () => {
   log.info('SERVER', `AMP Field Agent running at http://0.0.0.0:${PORT}`);
+  await initVault();
 });
