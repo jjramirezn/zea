@@ -1,4 +1,4 @@
-import { Wallet, JsonRpcProvider, ContractFactory, formatEther, parseUnits } from '/home/satoshi/clawd/hackathon/skill/node_modules/ethers/lib.esm/index.js';
+import { Wallet, JsonRpcProvider, ContractFactory, formatEther, parseUnits } from 'ethers';
 import { readFileSync } from 'fs';
 
 const RPC = 'https://api.avax.network/ext/bc/C/rpc';

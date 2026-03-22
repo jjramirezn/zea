@@ -39,7 +39,7 @@ async function init() {
 
   try {
     // Dynamic import ethers
-    ethers = await import('/home/satoshi/clawd/hackathon/skill/node_modules/ethers/lib.esm/index.js');
+    ethers = await import('ethers');
     provider = new ethers.JsonRpcProvider(AVAX_RPC);
     wallet = new ethers.Wallet(agentKey, provider);
     vault = new ethers.Contract(VAULT_ADDRESS, VAULT_ABI, wallet);
