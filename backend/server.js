@@ -281,10 +281,11 @@ const server = http.createServer(async (req, res) => {
 
       const content = [];
       let hasImage = false;
+      let imgBuffer = null;
       if (image) {
         hasImage = true;
         // Resize image to max 1024px wide to reduce memory + API latency
-        let imgBuffer = image.data;
+        imgBuffer = image.data;
         try {
           const tmpIn = `/tmp/zea-img-${Date.now()}-in`;
           const tmpOut = `/tmp/zea-img-${Date.now()}-out.jpg`;
