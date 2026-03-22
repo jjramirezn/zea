@@ -5,14 +5,14 @@ export const translations = {
     whatsappMessage: 'Hola%2C%20quiero%20diagnosticar%20mi%20cultivo',
     nav: {
       howItWorks: 'Cómo funciona',
-      cta: 'Probar en WhatsApp',
+      cta: 'Probar ahora',
     },
     hero: {
       label: 'Biotech Field Agent',
       heading: 'Diagnóstico de cultivos con',
       headingHighlight: 'péptidos antimicrobianos',
       sub: 'Enviá una foto de tu planta enferma por WhatsApp. Zea identifica el patógeno y recomienda el péptido exacto para combatirlo. Ciencia de laboratorio, directo al campo.',
-      cta: 'Probar en WhatsApp',
+      cta: 'Probar ahora',
       secondary: 'Cómo funciona',
     },
     stats: [
@@ -47,7 +47,7 @@ export const translations = {
     ],
     cta: {
       tagline: 'El campo, a tiempo.',
-      button: 'Probar en WhatsApp',
+      button: 'Probar ahora',
     },
     footer: 'Zea — Hackathon Aleph 2026',
     langSwitch: { label: '🇺🇸 EN', href: '/en', flag: '🇺🇸', code: 'EN' },
@@ -58,14 +58,14 @@ export const translations = {
     whatsappMessage: 'Hi%2C%20I%20want%20to%20diagnose%20my%20crop',
     nav: {
       howItWorks: 'How it works',
-      cta: 'Try on WhatsApp',
+      cta: 'Try now',
     },
     hero: {
       label: 'Biotech Field Agent',
       heading: 'Crop diagnostics with',
       headingHighlight: 'antimicrobial peptides',
       sub: 'Send a photo of your sick plant via WhatsApp. Zea identifies the pathogen and recommends the exact peptide to fight it. Lab science, straight to the field.',
-      cta: 'Try on WhatsApp',
+      cta: 'Try now',
       secondary: 'How it works',
     },
     stats: [
@@ -100,7 +100,7 @@ export const translations = {
     ],
     cta: {
       tagline: 'The field, on time.',
-      button: 'Try on WhatsApp',
+      button: 'Try now',
     },
     footer: 'Zea — Aleph Hackathon 2026',
     langSwitch: { label: '🇦🇷 ES', href: '/', flag: '🇦🇷', code: 'ES' },

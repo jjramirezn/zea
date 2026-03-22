@@ -1,0 +1,387 @@
+---
+interface Props {
+  lang: string;
+}
+const { lang } = Astro.props;
+const isEs = lang === 'es';
+---
+
+<section class="demo-section" id="demo">
+  <span class="section-label">{isEs ? 'Probalo ahora' : 'Try it now'}</span>
+  <h2 class="section-title">{isEs ? 'Diagnosticá tu cultivo' : 'Diagnose your crop'}</h2>
+  
+  <div class="demo-chat">
+    <div class="chat-header">
+      <div class="chat-avatar">🌱</div>
+      <div>
+        <div class="chat-name">Zea</div>
+        <div class="chat-status" id="demo-status">{isEs ? 'En línea' : 'Online'}</div>
+      </div>
+    </div>
+    
+    <div class="chat-messages" id="demo-messages">
+      <div class="msg msg-bot">
+        <p>{isEs 
+          ? '¡Hola! Soy Zea 🌱 Mandame una foto de tu planta afectada y te doy un diagnóstico con recomendación de péptidos antimicrobianos.' 
+          : 'Hi! I\'m Zea 🌱 Send me a photo of your affected plant and I\'ll give you a diagnosis with antimicrobial peptide recommendations.'}</p>
+      </div>
+    </div>
+    
+    <div class="chat-input-area">
+      <label class="upload-btn" id="upload-label">
+        <input type="file" accept="image/*" id="demo-file" hidden />
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      </label>
+      <input type="text" class="chat-input" id="demo-input" 
+        placeholder="{isEs ? 'Describí los síntomas...' : 'Describe symptoms...'}" />
+      <button class="send-btn" id="demo-send" disabled>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+      </button>
+    </div>
+    <div class="file-preview" id="file-preview" hidden>
+      <img id="preview-img" />
+      <button class="preview-remove" id="preview-remove">✕</button>
+    </div>
+  </div>
+</section>
+
+<style>
+  .demo-section {
+    padding: 40px 32px 80px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .section-title {
+    font-family: var(--font-display);
+    font-size: clamp(28px, 4vw, 42px);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    margin-bottom: 36px;
+    color: var(--text);
+  }
+
+  .demo-chat {
+    max-width: 520px;
+    margin: 0 auto;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    background: var(--bg);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+  }
+
+  .chat-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .chat-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(168, 216, 0, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+  }
+
+  .chat-name {
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--text);
+  }
+
+  .chat-status {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .chat-messages {
+    padding: 20px;
+    min-height: 300px;
+    max-height: 460px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .msg {
+    max-width: 85%;
+    padding: 10px 14px;
+    border-radius: 14px;
+    font-size: 14px;
+    line-height: 1.55;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+  }
+
+  .msg p { margin: 0; }
+
+  .msg-bot {
+    align-self: flex-start;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-bottom-left-radius: 4px;
+  }
+
+  .msg-user {
+    align-self: flex-end;
+    background: var(--primary);
+    color: var(--text);
+    border-bottom-right-radius: 4px;
+  }
+
+  .msg-user img {
+    max-width: 100%;
+    border-radius: 8px;
+    margin-bottom: 4px;
+    display: block;
+  }
+
+  .msg-loading {
+    align-self: flex-start;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-bottom-left-radius: 4px;
+    display: flex;
+    gap: 4px;
+    padding: 14px 18px;
+  }
+
+  .msg-loading .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--text-muted);
+    animation: bounce 1.4s ease-in-out infinite;
+  }
+
+  .msg-loading .dot:nth-child(2) { animation-delay: 0.2s; }
+  .msg-loading .dot:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes bounce {
+    0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+    40% { transform: scale(1); opacity: 1; }
+  }
+
+  .chat-input-area {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    border-top: 1px solid var(--border);
+    background: var(--bg-card);
+  }
+
+  .upload-btn {
+    cursor: pointer;
+    color: var(--text-muted);
+    padding: 6px;
+    border-radius: 8px;
+    transition: color 0.2s, background 0.2s;
+    display: flex;
+  }
+
+  .upload-btn:hover {
+    color: var(--text);
+    background: rgba(0,0,0,0.05);
+  }
+
+  .upload-btn.has-file { color: var(--primary-dark); }
+
+  .chat-input {
+    flex: 1;
+    border: none;
+    background: none;
+    font-family: var(--font);
+    font-size: 14px;
+    color: var(--text);
+    outline: none;
+    padding: 8px 0;
+  }
+
+  .chat-input::placeholder { color: var(--text-muted); }
+
+  .send-btn {
+    background: var(--primary);
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text);
+    transition: opacity 0.2s, transform 0.2s;
+  }
+
+  .send-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  .send-btn:not(:disabled):hover {
+    transform: scale(1.05);
+  }
+
+  .file-preview {
+    position: relative;
+    padding: 8px 16px 12px;
+    border-top: 1px solid var(--border);
+    background: var(--bg-card);
+  }
+
+  .file-preview img {
+    height: 80px;
+    border-radius: 8px;
+    object-fit: cover;
+  }
+
+  .preview-remove {
+    position: absolute;
+    top: 4px;
+    left: 90px;
+    background: var(--text);
+    color: var(--bg);
+    border: none;
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    font-size: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+</style>
+
+<script>
+  const messagesEl = document.getElementById('demo-messages');
+  const inputEl = document.getElementById('demo-input') as HTMLInputElement;
+  const fileEl = document.getElementById('demo-file') as HTMLInputElement;
+  const sendBtn = document.getElementById('demo-send') as HTMLButtonElement;
+  const previewEl = document.getElementById('file-preview');
+  const previewImg = document.getElementById('preview-img') as HTMLImageElement;
+  const removeBtn = document.getElementById('preview-remove');
+  const uploadLabel = document.getElementById('upload-label');
+  const statusEl = document.getElementById('demo-status');
+
+  let selectedFile: File | null = null;
+  let sending = false;
+
+  function updateSendBtn() {
+    sendBtn.disabled = sending || (!inputEl.value.trim() && !selectedFile);
+  }
+
+  inputEl.addEventListener('input', updateSendBtn);
+
+  fileEl.addEventListener('change', () => {
+    const f = fileEl.files?.[0];
+    if (!f) return;
+    selectedFile = f;
+    const url = URL.createObjectURL(f);
+    previewImg.src = url;
+    previewEl!.hidden = false;
+    uploadLabel!.classList.add('has-file');
+    updateSendBtn();
+  });
+
+  removeBtn?.addEventListener('click', () => {
+    selectedFile = null;
+    fileEl.value = '';
+    previewEl!.hidden = true;
+    uploadLabel!.classList.remove('has-file');
+    updateSendBtn();
+  });
+
+  function addMsg(html: string, cls: string) {
+    const div = document.createElement('div');
+    div.className = `msg ${cls}`;
+    div.innerHTML = html;
+    messagesEl!.appendChild(div);
+    messagesEl!.scrollTop = messagesEl!.scrollHeight;
+    return div;
+  }
+
+  async function send() {
+    if (sending) return;
+    const text = inputEl.value.trim();
+    const file = selectedFile;
+    if (!text && !file) return;
+
+    sending = true;
+    updateSendBtn();
+
+    // Show user message
+    let userHtml = '';
+    if (file) {
+      const url = URL.createObjectURL(file);
+      userHtml += `<img src="${url}" alt="uploaded" />`;
+    }
+    if (text) userHtml += `<p>${text.replace(/</g,'&lt;')}</p>`;
+    addMsg(userHtml, 'msg-user');
+
+    // Clear inputs
+    inputEl.value = '';
+    selectedFile = null;
+    fileEl.value = '';
+    previewEl!.hidden = true;
+    uploadLabel!.classList.remove('has-file');
+
+    // Loading dots
+    statusEl!.textContent = statusEl!.dataset.typing || 'Analizando...';
+    const loading = addMsg(
+      '<div class="dot"></div><div class="dot"></div><div class="dot"></div>',
+      'msg-loading'
+    );
+
+    try {
+      const form = new FormData();
+      form.append('message', text || (document.documentElement.lang === 'es' ? 'Diagnosticá esta planta' : 'Diagnose this plant'));
+      form.append('demo_token', 'aleph-hackathon-2026');
+      if (file) form.append('image', file);
+
+      const resp = await fetch('/api/chat', { method: 'POST', body: form });
+      const data = await resp.json();
+
+      loading.remove();
+      const reply = data.reply || data.error || 'Error';
+      addMsg(`<p>${reply.replace(/</g,'&lt;').replace(/\n/g,'<br>')}</p>`, 'msg-bot');
+    } catch (e) {
+      loading.remove();
+      addMsg(`<p>Error: ${(e as Error).message}</p>`, 'msg-bot');
+    }
+
+    statusEl!.textContent = statusEl!.dataset.online || 'En línea';
+    sending = false;
+    updateSendBtn();
+  }
+
+  sendBtn.addEventListener('click', send);
+  inputEl.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+  });
+
+  // Store localized strings
+  const isEs = document.documentElement.lang === 'es' || !document.documentElement.lang;
+  statusEl!.dataset.online = isEs ? 'En línea' : 'Online';
+  statusEl!.dataset.typing = isEs ? 'Analizando...' : 'Analyzing...';
+</script>
