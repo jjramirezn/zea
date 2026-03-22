@@ -103,18 +103,64 @@ Every recommendation ends with: *"Based on in vitro studies. Validate in the fie
 
 ---
 
-## Payments (x402)
+## Payments (x402 + ERC-8004 on Avalanche)
+
+Zea has its own **on-chain wallet** and pays for every diagnosis autonomously via an **AgentVault** smart contract deployed on **Avalanche C-Chain mainnet**.
+
+### How it works
+
+1. Farmer sends a photo → Zea diagnoses the plant
+2. On success, the agent signs a `pay()` transaction on-chain
+3. **$0.05 USDC** per diagnosis, logged as an on-chain event
+4. The cooperative (vault owner) sets daily spending limits
+5. Every payment is verifiable on Snowtrace
+
+### Contracts
+
+| Contract | Address | Network |
+|----------|---------|---------|
+| **AgentVault** | [`0x87D43066906B393df07aD27AaE3d66E821361aC1`](https://snowtrace.io/address/0x87D43066906B393df07aD27AaE3d66E821361aC1) | Avalanche C-Chain |
+| **USDC** | [`0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E`](https://snowtrace.io/address/0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E) | Avalanche C-Chain |
+
+### AgentVault (ERC-8004 inspired)
+
+The vault holds USDC on behalf of the agent. The **owner** (cooperative) deposits funds and sets limits. The **agent** (Zea's server-side wallet) can autonomously spend up to the daily cap.
+
+- `deposit(amount)` — cooperative funds the vault
+- `pay(to, amount, reason)` — agent pays for a service (e.g. `"diagnosis:botrytis_cinerea"`)
+- `setDailyLimit(limit)` — cooperative adjusts spending cap
+- `remainingToday()` — check remaining daily allowance
+- `balance()` — check vault USDC balance
+
+Every `pay()` emits a `Payment` event with the reason string — fully auditable on-chain.
+
+### Rate limiting + 402
 
 Every user gets **10 free diagnoses per hour**. After the limit, the API returns HTTP 402 with x402 protocol headers:
 
 ```
 HTTP/1.1 402 Payment Required
-X-Payment-Amount: 0.50
+X-Payment-Amount: 0.05
 X-Payment-Currency: USDC
-X-Payment-Required: true
+X-Payment-Network: avalanche
+X-Payment-Vault: 0x87D43066906B393df07aD27AaE3d66E821361aC1
 ```
 
-The farmer pays $0.50 USDC per diagnosis. This is the same protocol the agent uses to pay for its own compute. The payment integration is designed to be plugged into any x402-compatible wallet.
+### API
+
+`GET /api/vault` — returns vault status:
+
+```json
+{
+  "vault": "0x87D43066906B393df07aD27AaE3d66E821361aC1",
+  "agent": "0x8514C18bcc7ee6A4b47dfF18D5407f069112433C",
+  "balance": "$2.43",
+  "remainingToday": "$49.95",
+  "dailyLimit": "$50.00",
+  "network": "Avalanche C-Chain",
+  "snowtrace": "https://snowtrace.io/address/0x87D43066906B393df07aD27AaE3d66E821361aC1"
+}
+```
 
 For demos, the rate limit can be bypassed with a token via the `X-Demo-Token` header.
 
@@ -124,10 +170,12 @@ For demos, the rate limit can be bypassed with a token via the `X-Demo-Token` he
 
 - **WhatsApp:** Primary channel -- no app, no onboarding, no friction
 - **OpenClaw:** Agent runtime (session management, WhatsApp, tools)
-- **Claude Sonnet 4:** Vision AI for diagnosis + result translation
+- **Claude Sonnet 4:** Vision AI for diagnosis (Phase 1)
+- **Claude Haiku 4.5:** Fast translation for farmer-friendly output (Phase 4)
 - **Deterministic pipeline:** Pure Node.js for AMP selection and biosecurity
 - **Astro:** Static landing page (zero JS shipped to browser)
-- **x402:** Native payment protocol per diagnosis
+- **Avalanche C-Chain:** On-chain payments via AgentVault (USDC)
+- **x402 + ERC-8004:** HTTP 402 payment protocol + autonomous agent vault
 
 ---
 
@@ -156,6 +204,11 @@ zea/
       traductor_agentes.json    # AMP explanations
       biosecurity-alerts.json   # Red alerts and guardrails
     skill/SKILL.md              # OpenClaw agent instructions
+  x402/
+    AgentVault.sol              # Solidity contract (ERC-8004 inspired)
+    AgentVault.flat.sol         # Flattened for deployment
+    deploy.mjs                  # Deployment script
+    build/                      # Compiled ABI + bytecode
   docs/
     architecture.md    # Full architecture + roadmap
     frontend.md        # Design system + build commands
@@ -294,18 +347,52 @@ Toda recomendación termina con: *"Basado en estudios in vitro. Validar en campo
 
 ---
 
-## Pagos (x402)
+## Pagos (x402 + ERC-8004 en Avalanche)
+
+Zea tiene su propia **wallet on-chain** y paga por cada diagnóstico de forma autónoma a través de un smart contract **AgentVault** desplegado en **Avalanche C-Chain mainnet**.
+
+### Cómo funciona
+
+1. El agricultor manda una foto → Zea diagnostica la planta
+2. Si el diagnóstico es exitoso, el agente firma una transacción `pay()` on-chain
+3. **$0.05 USDC** por diagnóstico, registrado como evento on-chain
+4. La cooperativa (dueña del vault) configura límites diarios de gasto
+5. Cada pago es verificable en Snowtrace
+
+### Contratos
+
+| Contrato | Dirección | Red |
+|----------|-----------|-----|
+| **AgentVault** | [`0x87D43066906B393df07aD27AaE3d66E821361aC1`](https://snowtrace.io/address/0x87D43066906B393df07aD27AaE3d66E821361aC1) | Avalanche C-Chain |
+| **USDC** | [`0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E`](https://snowtrace.io/address/0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E) | Avalanche C-Chain |
+
+### AgentVault (inspirado en ERC-8004)
+
+El vault guarda USDC en nombre del agente. El **owner** (cooperativa) deposita fondos y establece límites. El **agente** (wallet server-side de Zea) puede gastar autónomamente hasta el tope diario.
+
+- `deposit(amount)` — la cooperativa fondea el vault
+- `pay(to, amount, reason)` — el agente paga por un servicio (ej: `"diagnosis:botrytis_cinerea"`)
+- `setDailyLimit(limit)` — la cooperativa ajusta el tope de gasto
+- `remainingToday()` — consultar cuánto queda hoy
+- `balance()` — consultar balance USDC del vault
+
+Cada `pay()` emite un evento `Payment` con el motivo — completamente auditable on-chain.
+
+### Rate limiting + 402
 
 Cada usuario tiene **10 diagnósticos gratuitos por hora**. Después del límite, la API retorna HTTP 402 con headers del protocolo x402:
 
 ```
 HTTP/1.1 402 Payment Required
-X-Payment-Amount: 0.50
+X-Payment-Amount: 0.05
 X-Payment-Currency: USDC
-X-Payment-Required: true
+X-Payment-Network: avalanche
+X-Payment-Vault: 0x87D43066906B393df07aD27AaE3d66E821361aC1
 ```
 
-El agricultor paga $0.50 USDC por diagnóstico. Es el mismo protocolo que el agente usa para pagar su propio cómputo. La integración de pagos está diseñada para conectarse con cualquier wallet compatible con x402.
+### API
+
+`GET /api/vault` — retorna estado del vault (ver sección en inglés).
 
 Para demos, el rate limit se puede bypassear con un token vía el header `X-Demo-Token`.
 
