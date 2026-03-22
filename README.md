@@ -4,7 +4,7 @@
 
 Send a photo of your sick plant via WhatsApp. Zea identifies the pathogen and recommends the exact antimicrobial peptide (AMP) to fight it.
 
-> **Try it now:** [+54 9 11 2261-1627](https://wa.me/5491122611627?text=Hi%2C%20I%20want%20to%20diagnose%20my%20crop) | [Web](https://getzea.com)
+> **Try it now:** [+54 9 11 2261-1627](https://wa.me/5491122611627?text=Hi%2C%20I%20want%20to%20diagnose%20my%20crop) | [Web](https://getzea.com) | [Vault Dashboard](https://getzea.com/vault)
 
 [Leer en espanol](#zea----espanol)
 
@@ -162,6 +162,18 @@ X-Payment-Vault: 0x87D43066906B393df07aD27AaE3d66E821361aC1
 }
 ```
 
+### Vault Dashboard
+
+Live at **[getzea.com/vault](https://getzea.com/vault)** — a real-time dashboard showing:
+
+- Vault USDC balance
+- Daily spending limit and remaining allowance (progress bar)
+- Contract addresses linked to Snowtrace
+- Recent payment transactions with on-chain verification links
+- Payment flow diagram
+
+Auto-refreshes every 15 seconds. Send a photo, watch the payment appear live.
+
 For demos, the rate limit can be bypassed with a token via the `X-Demo-Token` header.
 
 ---
@@ -249,7 +261,7 @@ MIT
 
 Mandá una foto de tu planta enferma por WhatsApp. Zea identifica el patógeno y te recomienda el péptido antimicrobiano (AMP) exacto para combatirlo.
 
-> **Probalo ahora:** [+54 9 11 2261-1627](https://wa.me/5491122611627?text=Hola%2C%20quiero%20diagnosticar%20mi%20cultivo) | [Web](https://getzea.com)
+> **Probalo ahora:** [+54 9 11 2261-1627](https://wa.me/5491122611627?text=Hola%2C%20quiero%20diagnosticar%20mi%20cultivo) | [Web](https://getzea.com) | [Vault Dashboard](https://getzea.com/vault)
 
 ---
 
@@ -393,6 +405,18 @@ X-Payment-Vault: 0x87D43066906B393df07aD27AaE3d66E821361aC1
 ### API
 
 `GET /api/vault` — retorna estado del vault (ver sección en inglés).
+
+### Vault Dashboard
+
+En vivo en **[getzea.com/vault](https://getzea.com/vault)** — un dashboard en tiempo real que muestra:
+
+- Balance USDC del vault
+- Límite diario de gasto y remanente (barra de progreso)
+- Direcciones de contratos con links a Snowtrace
+- Transacciones de pago recientes verificables on-chain
+- Diagrama del flujo de pago
+
+Se actualiza cada 15 segundos. Mandá una foto, mirá cómo aparece el pago en vivo.
 
 Para demos, el rate limit se puede bypassear con un token vía el header `X-Demo-Token`.
 
