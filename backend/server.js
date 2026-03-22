@@ -286,17 +286,28 @@ const server = http.createServer(async (req, res) => {
         hasImage = true;
         // Resize image to max 1024px wide to reduce memory + API latency
         imgBuffer = image.data;
-        try {
-          const tmpIn = `/tmp/zea-img-${Date.now()}-in`;
-          const tmpOut = `/tmp/zea-img-${Date.now()}-out.jpg`;
-          fs.writeFileSync(tmpIn, imgBuffer);
-          execSync(`convert "${tmpIn}" -resize "1024x1024>" -quality 80 "${tmpOut}"`, { timeout: 5000 });
-          imgBuffer = fs.readFileSync(tmpOut);
-          fs.unlinkSync(tmpIn);
-          fs.unlinkSync(tmpOut);
-          log.info('IMAGE', `Resized: ${image.data.length} -> ${imgBuffer.length} bytes`);
-        } catch (e) {
-          log.warn('IMAGE', `Resize failed, using original: ${e.message}`);
+        const MIN_RESIZE_BYTES = 200_000; // only resize if > 200KB
+        if (imgBuffer.length > MIN_RESIZE_BYTES) {
+          try {
+            const tmpIn = `/tmp/zea-img-${Date.now()}-in`;
+            const tmpOut = `/tmp/zea-img-${Date.now()}-out.jpg`;
+            fs.writeFileSync(tmpIn, imgBuffer);
+            execSync(`convert "${tmpIn}" -resize "1024x1024>" -quality 80 "${tmpOut}"`, { timeout: 5000 });
+            const resized = fs.readFileSync(tmpOut);
+            fs.unlinkSync(tmpIn);
+            fs.unlinkSync(tmpOut);
+            // Only use resized if it's actually smaller
+            if (resized.length < imgBuffer.length) {
+              log.info('IMAGE', `Resized: ${imgBuffer.length} -> ${resized.length} bytes`);
+              imgBuffer = resized;
+            } else {
+              log.info('IMAGE', `Skipped resize: output larger (${resized.length} > ${imgBuffer.length})`);
+            }
+          } catch (e) {
+            log.warn('IMAGE', `Resize failed, using original: ${e.message}`);
+          }
+        } else {
+          log.info('IMAGE', `Skipped resize: already small (${imgBuffer.length} bytes)`);
         }
         const b64 = imgBuffer.toString('base64');
         content.push({
