@@ -4,7 +4,7 @@ import http from 'http';
 
 import { PHASE1_PROMPT, PHASE1_TEXT_PROMPT, PHASE4_SYSTEM } from './prompts.js';
 import { deterministicPipeline } from './pipeline.js';
-import { callClaude } from './claude.js';
+import { callClaude, MODELS } from './claude.js';
 import { log } from './logger.js';
 
 const PORT = process.env.PORT || 3000;
@@ -16,7 +16,7 @@ const PORT = process.env.PORT || 3000;
 async function handleChat(userMessages, hasImage) {
   // PHASE 1: AI Diagnosis → structured JSON
   const systemPrompt = hasImage ? PHASE1_PROMPT : PHASE1_TEXT_PROMPT;
-  const phase1Response = await callClaude(systemPrompt, userMessages);
+  const phase1Response = await callClaude(systemPrompt, userMessages, { model: MODELS.phase1 });
   const phase1Text = phase1Response.content.find(c => c.type === 'text')?.text || '';
 
   let diagnosis;
@@ -79,7 +79,7 @@ Now write a clear, empathetic response for the user based ONLY on these verified
     }
   ];
 
-  const phase4Response = await callClaude(PHASE4_SYSTEM, phase4Messages);
+  const phase4Response = await callClaude(PHASE4_SYSTEM, phase4Messages, { model: MODELS.phase4 });
   return phase4Response.content.find(c => c.type === 'text')?.text || 'Error al generar respuesta.';
 }
 

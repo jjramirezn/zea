@@ -1,6 +1,12 @@
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 
-export async function callClaude(system, messages) {
+// Models per phase — Haiku for speed, Sonnet for complex vision tasks
+export const MODELS = {
+  phase1: 'claude-sonnet-4-20250514',   // diagnosis needs vision + reasoning
+  phase4: 'claude-haiku-3-5-20241022',  // translation is formatting only
+};
+
+export async function callClaude(system, messages, { model = MODELS.phase1 } = {}) {
   const res = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
@@ -9,7 +15,7 @@ export async function callClaude(system, messages) {
       'anthropic-version': '2023-06-01',
     },
     body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
+      model,
       max_tokens: 2048,
       system,
       messages,
