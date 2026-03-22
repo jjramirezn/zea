@@ -3,7 +3,7 @@ const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 // Models per phase — Haiku for speed, Sonnet for complex vision tasks
 export const MODELS = {
   phase1: 'claude-sonnet-4-20250514',   // diagnosis needs vision + reasoning
-  phase4: 'claude-haiku-3-5-20241022',  // translation is formatting only
+  phase4: 'claude-3-5-haiku-20241022',  // translation is formatting only
 };
 
 export async function callClaude(system, messages, { model = MODELS.phase1 } = {}) {
