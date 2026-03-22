@@ -10,7 +10,7 @@ Send a photo of your sick plant via WhatsApp. Zea identifies the pathogen and re
 
 ## Demo
 
-<video src="https://github.com/jjramirezn/zea/raw/main/docs/demo-whatsapp.mp4" controls width="600"></video>
+https://github.com/user-attachments/assets/fd13da6b-1a38-4b68-85ce-26fbdd196a46
 
 > 📱 Real WhatsApp conversation: photo → diagnosis → AMP recommendation → on-chain payment
 > **Try it now:** [+54 9 11 2261-1627](https://wa.me/5491122611627?text=Hi%2C%20I%20want%20to%20diagnose%20my%20crop) | [Web](https://getzea.com) | [Vault Dashboard](https://getzea.com/vault)
@@ -304,7 +304,7 @@ Mandá una foto de tu planta enferma por WhatsApp. Zea identifica el patógeno y
 
 ## Demo
 
-<video src="https://github.com/jjramirezn/zea/raw/main/docs/demo-whatsapp.mp4" controls width="600"></video>
+https://github.com/user-attachments/assets/fd13da6b-1a38-4b68-85ce-26fbdd196a46
 
 > 📱 Conversación real de WhatsApp: foto → diagnóstico → recomendación AMP → pago on-chain
 
