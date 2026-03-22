@@ -41,27 +41,23 @@ async function handleChat(userMessages, hasImage) {
   log.diagnosis(userMessages[0]?.sessionId || 'unknown', diagnosis, pipelineResult);
 
   // PHASE 4: AI translates verified results for user
-  // Strip images so Phase 4 cannot re-diagnose from the photo
-  const textOnlyMessages = userMessages.map(msg => {
-    if (msg.role === 'user' && Array.isArray(msg.content)) {
-      const textParts = msg.content.filter(part => part.type === 'text');
-      if (textParts.length === 0) {
-        return { role: 'user', content: [{ type: 'text', text: '[user sent an image]' }] };
-      }
-      return { role: 'user', content: textParts };
-    }
-    return msg;
-  });
+  // Extract user's text to detect language, then send ONLY pipeline results
+  const userText = userMessages
+    .filter(m => m.role === 'user')
+    .flatMap(m => Array.isArray(m.content) ? m.content.filter(p => p.type === 'text').map(p => p.text) : [m.content])
+    .join(' ')
+    .slice(0, 200);
+
+  const looksSpanish = /[áéíóúñ¿¡]|cultivo|planta|hoja|enferm|tomate|maíz/i.test(userText);
+  const userLang = looksSpanish ? 'español' : 'English';
 
   const phase4Messages = [
-    ...textOnlyMessages,
-    {
-      role: 'assistant',
-      content: `[Phase 1 diagnosis complete]`
-    },
     {
       role: 'user',
-      content: `[SYSTEM — VERIFIED PIPELINE RESULTS — present these to the user]
+      content: `User language: ${userLang}
+${userText ? `User's original message: "${userText}"` : ''}
+
+VERIFIED PIPELINE RESULTS (present these to the user):
 
 Phase 1 Diagnosis (AI observation):
 ${JSON.stringify(diagnosis, null, 2)}
@@ -74,9 +70,9 @@ CRITICAL RULES:
 - If amp_matches is empty, say "No tenemos un péptido validado para este patógeno en nuestra base de datos actual."
 - Do NOT recommend AMPs for pathogens that are not in amp_matches.
 - Present the TOP candidate from the diagnosis as-is, even if it has no AMP match.
-- The crop field in the diagnosis is already identified. Use it directly.
+- Respond in ${userLang}.
 
-Now write a clear, empathetic response for the user based ONLY on these verified results.`
+Write a clear, empathetic response for the farmer based ONLY on these verified results.`
     }
   ];
 
