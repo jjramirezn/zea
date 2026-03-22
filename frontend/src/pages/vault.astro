@@ -1,0 +1,592 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Zea — AgentVault Dashboard">
+  <div class="vault-page">
+    <nav class="vault-nav">
+      <a href="/" class="logo">
+        <svg class="logo-icon" viewBox="0 0 64 64" fill="none" width="36" height="36">
+          <rect width="64" height="64" rx="13" fill="rgba(168,216,0,0.12)"/>
+          <path d="M14 16H50L22 48H50" stroke="#1A2208" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="50" cy="16" r="5" fill="#A8D800"/>
+          <circle cx="50" cy="16" r="2.5" fill="#5A8800"/>
+        </svg>
+        <span class="wordmark">Z<em>ea</em></span>
+      </a>
+      <div class="vault-badge">
+        <span class="pulse"></span>
+        LIVE ON AVALANCHE
+      </div>
+    </nav>
+
+    <header class="vault-header">
+      <p class="vault-label">AGENTVAULT · ERC-8004</p>
+      <h1>Agent Economics</h1>
+      <p class="vault-sub">Every diagnosis triggers an autonomous on-chain payment. No human in the loop.</p>
+    </header>
+
+    <div class="dashboard">
+      <!-- Main balance -->
+      <div class="card card-balance">
+        <div class="card-label">Vault Balance</div>
+        <div class="balance-amount" id="balance">—</div>
+        <div class="balance-token">USDC</div>
+        <div class="balance-network">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="#E84142" stroke-width="2"/><path d="M4.5 8.5L7 4 9.5 8.5H4.5Z" fill="#E84142"/></svg>
+          Avalanche C-Chain
+        </div>
+      </div>
+
+      <!-- Stats row -->
+      <div class="card card-stat">
+        <div class="card-label">Cost per diagnosis</div>
+        <div class="stat-value">$0.05</div>
+        <div class="stat-detail">USDC</div>
+      </div>
+
+      <div class="card card-stat">
+        <div class="card-label">Daily limit</div>
+        <div class="stat-value" id="dailyLimit">—</div>
+        <div class="stat-detail">USDC</div>
+      </div>
+
+      <div class="card card-stat">
+        <div class="card-label">Remaining today</div>
+        <div class="stat-value" id="remaining">—</div>
+        <div class="stat-detail" id="remainingBar">
+          <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        </div>
+      </div>
+
+      <!-- Addresses -->
+      <div class="card card-addresses">
+        <div class="card-label">Contracts</div>
+        <div class="address-row">
+          <span class="address-label">AgentVault</span>
+          <a class="address-link" id="vaultLink" href="#" target="_blank">—</a>
+        </div>
+        <div class="address-row">
+          <span class="address-label">Agent Wallet</span>
+          <a class="address-link" id="agentLink" href="#" target="_blank">—</a>
+        </div>
+        <div class="address-row">
+          <span class="address-label">USDC</span>
+          <a class="address-link" href="https://snowtrace.io/address/0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E" target="_blank">0xB97E...c66Dd9c48a6E</a>
+        </div>
+      </div>
+
+      <!-- Recent payments -->
+      <div class="card card-txs">
+        <div class="card-label">Recent Payments</div>
+        <div id="txList" class="tx-list">
+          <div class="tx-loading">Loading transactions...</div>
+        </div>
+      </div>
+
+      <!-- How it works -->
+      <div class="card card-flow">
+        <div class="card-label">Payment Flow</div>
+        <div class="flow-steps">
+          <div class="flow-step">
+            <div class="flow-icon">📸</div>
+            <div class="flow-text">Farmer sends photo</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">
+            <div class="flow-icon">🧬</div>
+            <div class="flow-text">Zea diagnoses</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">
+            <div class="flow-icon">⛓️</div>
+            <div class="flow-text">Agent signs pay()</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">
+            <div class="flow-icon">✅</div>
+            <div class="flow-text">$0.05 USDC on-chain</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="vault-footer">
+      <a href="/" class="footer-link">← Back to Zea</a>
+      <span class="footer-sep">·</span>
+      <a href="https://github.com/jjramirezn/zea" class="footer-link" target="_blank">GitHub</a>
+      <span class="footer-sep">·</span>
+      <span class="footer-text">Built at Aleph Hackathon 2026</span>
+    </footer>
+  </div>
+</Layout>
+
+<style>
+  .vault-page {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 24px 20px 60px;
+  }
+
+  .vault-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 0 32px;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: var(--text);
+  }
+
+  .wordmark {
+    font-family: var(--font-display);
+    font-size: 24px;
+    font-weight: 600;
+  }
+
+  .wordmark em {
+    font-style: italic;
+    color: var(--primary-dark);
+  }
+
+  .vault-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    color: #E84142;
+    background: rgba(232, 65, 66, 0.08);
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid rgba(232, 65, 66, 0.2);
+  }
+
+  .pulse {
+    width: 8px;
+    height: 8px;
+    background: #E84142;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(232, 65, 66, 0.4); }
+    50% { opacity: 0.8; box-shadow: 0 0 0 6px rgba(232, 65, 66, 0); }
+  }
+
+  .vault-header {
+    margin-bottom: 32px;
+  }
+
+  .vault-label {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+
+  .vault-header h1 {
+    font-family: var(--font-display);
+    font-size: 42px;
+    font-weight: 600;
+    line-height: 1.1;
+    margin-bottom: 8px;
+  }
+
+  .vault-sub {
+    font-size: 16px;
+    color: var(--text-muted);
+    max-width: 480px;
+  }
+
+  .dashboard {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+  }
+
+  .card-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  /* Balance card */
+  .card-balance {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 40px 24px;
+    background: linear-gradient(135deg, var(--bg-card), rgba(168, 216, 0, 0.04));
+    border-color: var(--border-active);
+  }
+
+  .balance-amount {
+    font-family: var(--mono);
+    font-size: 72px;
+    font-weight: 500;
+    letter-spacing: -2px;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .balance-token {
+    font-family: var(--mono);
+    font-size: 16px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+  }
+
+  .balance-network {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  /* Stat cards */
+  .stat-value {
+    font-family: var(--mono);
+    font-size: 32px;
+    font-weight: 500;
+    line-height: 1.2;
+  }
+
+  .stat-detail {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  .progress-bar {
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    margin-top: 8px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--primary);
+    border-radius: 3px;
+    transition: width 0.6s ease;
+    width: 0%;
+  }
+
+  /* Addresses */
+  .card-addresses {
+    grid-column: 1 / -1;
+  }
+
+  .address-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .address-row:last-child { border-bottom: none; }
+
+  .address-label {
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .address-link {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--primary-dark);
+    text-decoration: none;
+    transition: opacity 0.2s;
+  }
+
+  .address-link:hover { opacity: 0.7; }
+
+  /* Transactions */
+  .card-txs {
+    grid-column: 1 / -1;
+  }
+
+  .tx-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .tx-loading {
+    font-size: 14px;
+    color: var(--text-muted);
+    padding: 20px 0;
+    text-align: center;
+  }
+
+  .tx-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .tx-row:last-child { border-bottom: none; }
+
+  .tx-left {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .tx-reason {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .tx-time {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .tx-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .tx-amount {
+    font-family: var(--mono);
+    font-size: 14px;
+    font-weight: 500;
+    color: #E84142;
+  }
+
+  .tx-link {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--primary-dark);
+    text-decoration: none;
+    padding: 4px 8px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    transition: all 0.15s;
+  }
+
+  .tx-link:hover {
+    background: var(--primary-glow);
+    border-color: var(--border-active);
+  }
+
+  /* Flow */
+  .card-flow {
+    grid-column: 1 / -1;
+  }
+
+  .flow-steps {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .flow-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 16px 20px;
+    background: var(--bg);
+    border-radius: var(--radius-sm);
+    min-width: 120px;
+  }
+
+  .flow-icon { font-size: 28px; }
+
+  .flow-text {
+    font-size: 13px;
+    font-weight: 500;
+    text-align: center;
+  }
+
+  .flow-arrow {
+    font-size: 20px;
+    color: var(--text-muted);
+  }
+
+  /* Footer */
+  .vault-footer {
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  .footer-link {
+    color: var(--primary-dark);
+    text-decoration: none;
+  }
+
+  .footer-link:hover { opacity: 0.7; }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .dashboard {
+      grid-template-columns: 1fr;
+    }
+
+    .balance-amount { font-size: 48px; }
+    .vault-header h1 { font-size: 32px; }
+
+    .card-stat {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      grid-template-rows: auto auto;
+      align-items: center;
+    }
+
+    .card-stat .card-label { grid-column: 1; margin-bottom: 0; }
+    .card-stat .stat-value { grid-column: 2; grid-row: 1; font-size: 24px; text-align: right; }
+    .card-stat .stat-detail { grid-column: 1 / -1; }
+
+    .flow-arrow { display: none; }
+    .flow-steps { gap: 8px; }
+    .flow-step { flex: 1; min-width: 0; padding: 12px 8px; }
+    .flow-text { font-size: 11px; }
+
+    .address-row { flex-direction: column; align-items: flex-start; gap: 4px; }
+
+    .vault-footer { flex-wrap: wrap; }
+  }
+</style>
+
+<script>
+  const VAULT_API = '/api/vault';
+  const SNOWTRACE_API = 'https://api.snowtrace.io/api';
+  const VAULT_ADDRESS = '0x87D43066906B393df07aD27AaE3d66E821361aC1';
+
+  function shortAddr(addr) {
+    return addr.slice(0, 6) + '...' + addr.slice(-8);
+  }
+
+  async function loadVaultStatus() {
+    try {
+      const res = await fetch(VAULT_API);
+      const data = await res.json();
+      if (!data || data.error) return;
+
+      document.getElementById('balance').textContent = data.balance;
+      document.getElementById('dailyLimit').textContent = data.dailyLimit;
+      document.getElementById('remaining').textContent = data.remainingToday;
+
+      // Progress bar
+      const limit = parseFloat(data.dailyLimit.replace('$', ''));
+      const remaining = parseFloat(data.remainingToday.replace('$', ''));
+      const used = limit - remaining;
+      const pct = limit > 0 ? (remaining / limit) * 100 : 0;
+      document.getElementById('progressFill').style.width = pct + '%';
+
+      // Addresses
+      const vaultLink = document.getElementById('vaultLink');
+      vaultLink.href = data.snowtrace;
+      vaultLink.textContent = shortAddr(data.vault);
+
+      const agentLink = document.getElementById('agentLink');
+      agentLink.href = `https://snowtrace.io/address/${data.agent}`;
+      agentLink.textContent = shortAddr(data.agent);
+    } catch (e) {
+      console.error('Failed to load vault status:', e);
+    }
+  }
+
+  async function loadTransactions() {
+    try {
+      const res = await fetch(
+        `${SNOWTRACE_API}?module=logs&action=getLogs&address=${VAULT_ADDRESS}&topic0=0x7c232d132aac3fcb36fdd05e7faa11009a85eb91a52e55397768bdce02301c52&fromBlock=0&toBlock=latest&sort=desc&apikey=YourApiKeyToken`
+      );
+      const data = await res.json();
+      const txList = document.getElementById('txList');
+
+      if (!data.result || data.result.length === 0) {
+        // Fallback: just show regular txs
+        const res2 = await fetch(
+          `${SNOWTRACE_API}?module=account&action=txlist&address=${VAULT_ADDRESS}&startblock=0&endblock=99999999&sort=desc&apikey=YourApiKeyToken`
+        );
+        const data2 = await res2.json();
+        if (!data2.result || data2.result.length === 0) {
+          txList.innerHTML = '<div class="tx-loading">No transactions yet</div>';
+          return;
+        }
+
+        txList.innerHTML = data2.result.slice(0, 10).map(tx => {
+          const date = new Date(parseInt(tx.timeStamp) * 1000);
+          const timeStr = date.toLocaleString();
+          const isPayment = tx.input && tx.input.length > 10;
+          return `
+            <div class="tx-row">
+              <div class="tx-left">
+                <span class="tx-reason">${isPayment ? '🧬 Diagnosis payment' : '💰 Deposit'}</span>
+                <span class="tx-time">${timeStr}</span>
+              </div>
+              <div class="tx-right">
+                <span class="tx-amount">${isPayment ? '-$0.05' : 'deposit'}</span>
+                <a class="tx-link" href="https://snowtrace.io/tx/${tx.hash}" target="_blank">Snowtrace ↗</a>
+              </div>
+            </div>
+          `;
+        }).join('');
+        return;
+      }
+
+      txList.innerHTML = data.result.slice(0, 10).map(log => {
+        const date = new Date(parseInt(log.timeStamp, 16) * 1000);
+        const timeStr = date.toLocaleString();
+        return `
+          <div class="tx-row">
+            <div class="tx-left">
+              <span class="tx-reason">🧬 Diagnosis payment</span>
+              <span class="tx-time">${timeStr}</span>
+            </div>
+            <div class="tx-right">
+              <span class="tx-amount">-$0.05</span>
+              <a class="tx-link" href="https://snowtrace.io/tx/${log.transactionHash}" target="_blank">Snowtrace ↗</a>
+            </div>
+          </div>
+        `;
+      }).join('');
+    } catch (e) {
+      console.error('Failed to load txs:', e);
+      document.getElementById('txList').innerHTML = '<div class="tx-loading">Failed to load transactions</div>';
+    }
+  }
+
+  // Load and auto-refresh
+  loadVaultStatus();
+  loadTransactions();
+  setInterval(loadVaultStatus, 15000);
+  setInterval(loadTransactions, 30000);
+</script>
